@@ -1,0 +1,18 @@
+This project integrates user-provided local project and skill material.
+
+Reference collector: forumcrawl, supplied by the project owner. Its queue, immutable evidence,
+bounded-stop, URL validation and verification design informed the integration.
+The copied site_profiles.py is a reference snapshot and is not the runnable
+collector. The original continuous controller is deliberately not invoked.
+
+The original vps-review-analyze skill and review.py are copied unchanged and
+invoked for their existing 61-field validation and normalization contract.
+NodeSeek first-post parsing is adapted from the user-provided
+vps-review-download skill and retains its explicit div#0 / article.post-content
+scope and permitted linked-report domains.
+
+Source SHA256 identities are recorded in provenance.json. No separate license
+file was found in the scoped reference roots. No license grant is invented;
+the copies retain their original ownership and restrictions. Confirm rights
+before redistributing them publicly. No private runtime data or credentials
+are bundled. Source checkout is the supported deployment format.

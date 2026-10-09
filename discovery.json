@@ -1,0 +1,32 @@
+{
+  "schema_version": "vps-integrated-discovery/1",
+  "backend_version": "0.2.0",
+  "v5_ui_integration": "integrated_local_and_safe_export",
+  "v5_source": {
+    "source_type": "previously_retained_local_archive",
+    "sha256": "827dd9a35dbc0d0601932540c23f2f60889079a25ddcf0f205221576e8f77558",
+    "bytes": 406767,
+    "commit": "94eb3bf5cf05828da2f88273e13654c2443d410f",
+    "new_download_attempted": false
+  },
+  "v5_baseline": {
+    "posts": 120,
+    "objects": 128,
+    "verified_reviews": 22
+  },
+  "legacy_import_profile": "browser-fragment-batch-20261008",
+  "ai_runtime": "explicit_real_assistant_handoff_no_model_api",
+  "safe_public_exports": [
+    "export-public",
+    "export-v5"
+  ],
+  "private_evidence_export": "export-evidence",
+  "original_skill_modified": false,
+  "network_collection_tested_live": false,
+  "deployment_changed": false,
+  "prior_backend_versions_preserved": [
+    "0.1.0",
+    "0.1.1",
+    "0.1.2"
+  ]
+}

@@ -1,0 +1,29 @@
+# Python build/cache
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+/build/
+/dist/
+
+# Private runtime, evidence, local exports and secrets
+/var/
+/var-*/
+/data/
+/work/
+/private-evidence*/
+/public-vps*/
+/backup*/
+.env
+.env.*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+.import.lock
+*.log
+
+# Keep the bundled public website tracked.
+!/website/dist/
+!/website/dist/**

@@ -1,0 +1,36 @@
+{
+  "checked_on": "2026-10-09",
+  "status": "pass",
+  "source_delivery_sha256": "27be117c6f02ab17f85749bf191ad9585397633122be5a8a9f2d0385cc8cbf01",
+  "runtime": {
+    "os": "Debian GNU/Linux 13.6",
+    "python": "3.12.14"
+  },
+  "checks": {
+    "offline_commands": 12,
+    "backend_python_tests": 259,
+    "bridge_python_tests": 40,
+    "collector_skill_tests": 7,
+    "analyzer_skill_self_test": "pass",
+    "baseline_web_assertions": 66,
+    "integrated_web_assertions": 22,
+    "route_direction_assertions": 7,
+    "independent_process_checks": 117,
+    "localhost_http_requests": 42
+  },
+  "source_changes": "Publication-only documentation/provenance cleanup and ignore rules; application source, original skill files, and public baseline data unchanged.",
+  "privacy": {
+    "raw_execution_logs_included": false,
+    "private_database_included": false,
+    "original_private_evidence_included": false,
+    "credential_pattern_scan": "No credential patterns found in publishable files; synthetic negative security cases are kept."
+  },
+  "limits": {
+    "live_network_collection_tested": false,
+    "model_api_called": false,
+    "actual_browser_visual_qa": false,
+    "debian12_runtime_tested": false,
+    "windows_020_full_runtime_tested": false,
+    "production_services_installed": false
+  }
+}

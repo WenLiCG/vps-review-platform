@@ -1,0 +1,35 @@
+[Unit]
+Description=Local VPS review evidence management
+After=local-fs.target
+
+[Service]
+Type=simple
+User=vps-pipeline
+Group=vps-pipeline
+WorkingDirectory=/opt/vps-review-pipeline
+ExecStart=/usr/bin/python3 -m vps_pipeline --data /var/lib/vps-review-pipeline serve --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5
+UMask=0077
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vps-review-pipeline
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+StandardOutput=journal
+StandardError=journal
+# The session token appears in the local journal. Restrict journal access.
+# Create the service account and private data directory before starting.
+# This service never starts collection or opens a public management listener.
+
+[Install]
+WantedBy=multi-user.target

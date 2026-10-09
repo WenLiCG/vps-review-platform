@@ -1,0 +1,4 @@
+SYNTHETIC OFFLINE REPORT FIXTURE - NOT AN ACTUAL VPS BENCHMARK
+This fixture exercises archive handling only. CPU model: unknown. Package facts: unspecified.
+Measured speed: unknown. Original units: unknown. Protocol and route direction: unknown.
+Operator: synthetic test runner. Benchmark version: fixture-v1. No real test was performed.

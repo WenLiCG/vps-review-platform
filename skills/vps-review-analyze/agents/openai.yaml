@@ -1,0 +1,4 @@
+interface:
+  display_name: "VPS 评测识别"
+  short_description: "用 AI 识别本地 VPS 评测归档，保留字段证据并生成结构化数据与 Markdown"
+  default_prompt: "使用 $vps-review-analyze 识别指定归档目录中的评测，生成结构化 JSON 和 Markdown，标注缺失与推断。"

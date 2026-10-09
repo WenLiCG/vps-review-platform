@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert/strict');
+const source=process.env.VPS_CATALOG_ROOT||path.join(__dirname,'../website/dist');
+const ctx={escapeHTML:value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))};
+vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(source,'skill-refresh.js'),'utf8'),ctx);
+let checks=0;const check=(x,name)=>{assert(x,name);checks++};
+const row=direction=>({family:'IPv4',operator:'电信',direction,transport:'TCP',reportedLabels:['CN2'],rawLabel:'CN2',filterEligible:true,evidenceRefs:[]});
+const render=rows=>ctx.skillRouteDetails({skillReview:{routeObservations:rows}});
+const outbound=render([row('outbound')]);check(outbound.includes('电信 / 去程'),'outbound labeled 去程');check(!outbound.includes('回程'),'outbound not mislabeled 回程');
+const inbound=render([row('return')]);check(inbound.includes('电信 / 回程'),'return labeled 回程');check(!inbound.includes('去程'),'return not mislabeled 去程');
+const mixed=render([row('outbound'),row('return')]);check(mixed.includes('电信 / 去程')&&mixed.includes('电信 / 回程'),'mixed rows preserve own direction');
+const unknown=render([row(null)]);check(unknown.includes('方向未知')&&!unknown.includes(' / 回程'),'unknown not silently return');
+const icmp=render([{...row('outbound'),transport:'ICMP'}]);check(icmp.includes('传输协议线路记录')&&icmp.includes('ICMP')&&!icmp.includes('TCP·UDP'),'heading fits actual transport');
+console.log(JSON.stringify({passed:true,assertions:checks}));

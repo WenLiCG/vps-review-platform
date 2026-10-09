@@ -1,0 +1,62 @@
+{
+  "sourceSite": {
+    "version": 5,
+    "commit": "94eb3bf5cf05828da2f88273e13654c2443d410f",
+    "url": "https://vps-review-index.wangshikun1821556976.chatgpt.site",
+    "access": "public",
+    "verifiedAt": "2026-10-09T00:50:01Z"
+  },
+  "catalog": {
+    "posts": 120,
+    "objects": 128,
+    "skillReviewedPosts": 22,
+    "latestBatch": {
+      "posts": 20,
+      "objects": 20,
+      "ready": 9,
+      "partial": 11,
+      "imagesReviewed": 52,
+      "imagesCountNote": "含报告图、标志、表情等素材，非52份独立测评报告。"
+    }
+  },
+  "sourceSkillZip": {
+    "sha256": "f7d48c7b6771a147595279ef3144c3388dce2f8dbead023dc2e1c44aef14b3c2",
+    "bytes": 35000,
+    "unchangedSourceFiles": 10
+  },
+  "siteSourceFiles": {
+    "website/.gitignore": "2e64ce2cffa72829072adc17de538028a4bef55b1b0e827e0107e411f0bfacc7",
+    "website/.openai/hosting.json": "4e3cd430e24bd4f631008b4d8ee5fd299222c5d4686bfd94cbfb262084efb643",
+    "website/README.md": "ffdf43f32d8118b68f9593088a2e43f74e02724b2cdca7ceaa5bf01e4e4bc4f7",
+    "website/dist/app.js": "29a9af280d4e3a1f9f61dd6a169c57796786ae662b84f2766c3c9adb9b2025f4",
+    "website/dist/data.json": "84564e532857dfd440ddb71bd8804e691472fe20e05740222a3fe137aca3524b",
+    "website/dist/enrichment.json": "529892556e7a67615f98aa88139253c0c9d82f6353fd2641bdcf8d27aa4d4015",
+    "website/dist/favicon.svg": "1959a02b15be2378982682506d15bf1c8c1bc313241f1c12f5405b9219042f87",
+    "website/dist/filter-spec.json": "7f41f9daab0635a05b582b03253c5cc2ab22203bfed7b634ada4f784a4649bfb",
+    "website/dist/image-evidence.json": "1c527ca2570ba4adc87f0ecbf842c31a8a001f5ffb3f31b8f7882e1251f88089",
+    "website/dist/incremental-public-provenance.json": "0efcb36a6efa7eed60dbb9631ecca5d811d9f00c8ec95f8b1cfefc61d05d88d2",
+    "website/dist/index.html": "aad64764edf44be7fa4f02c366d899fc52e7a22b682d4e68a1a674a90b0ccb6a",
+    "website/dist/skill-refresh.js": "42d656337dbe23f919cdf46d17753edf2ebbe93aecafcc38aeecc03035b95842",
+    "website/dist/skill-refresh.json": "747273ccf5b6ef406ad0f9efcf27f054f18c107534543061d2f0dec4b24547d3",
+    "website/dist/style.css": "b0269dfa04bb1888a83f66782639a4b0069549b56adff61637abed1ecd3e32ca",
+    "website/dist/workbench.js": "d40e806b6e7e6ec4feb5f456dfaac4234a6c2bb801094ee4608ec505e31d2245"
+  },
+  "skillSourceFiles": {
+    "skills/vps-review-analyze/SKILL.md": "ffc8317701189fafd385aa128efd3abee1d846cc39d000d35a0c64bbb1d1c0b6",
+    "skills/vps-review-download/SKILL.md": "2e2a2b4eca754bad923e08c46cba12867c7bee341a6dde390c3a62931c528c7b",
+    "skills/vps-review-analyze/agents/openai.yaml": "6c2ceeaee971816b801c5ea88fede73e0cd30b5131ef30b859fc511270826f29",
+    "skills/vps-review-analyze/references/contract.md": "8d59a51eddc596d1fabc6c04895d3504d03318c838f9fbcc96129c82c3771563",
+    "skills/vps-review-analyze/references/fields.json": "9b4558d269bd7270fb91da1f1bd922cc0a0603c9dd0065ddf3e0045038e89584",
+    "skills/vps-review-analyze/scripts/review.py": "3c559a3aa3581149490345a85f12b80d689f427e55c3c8d43251d37b6c6cd526",
+    "skills/vps-review-analyze/scripts/test_review.py": "6bd1e7a46c75b64b1727a129ac1eb0a27feecfb404e9ff1d23ae741c14c3eb2c",
+    "skills/vps-review-download/agents/openai.yaml": "9102eb27ecb0ea9a49166efcd680fbaadc7e3d14a12865a12670156dce525e75",
+    "skills/vps-review-download/scripts/download.py": "0c93d2bedc2af45385c0b2c654acb475e1386a4511a597508defe54dc6414eb0",
+    "skills/vps-review-download/scripts/test_download.py": "db0c0fe17c284b87323d6c67d19d77a82d24dd32cb2811a5e1c570bc8a1c6f75"
+  },
+  "packagingChanges": [
+    "仅在bridge副本中将测试输入改为包内相对路径及v5计数。",
+    "仅在bridge副本中将checkpoint_to_index的批次ID/日期/源提交改为必填参数。",
+    "新增部署、验证与运行测试脚本及中文说明。网站源文件与两个skill的10个文件未改动。",
+    "bridge副本显式使用UTF-8，并拒绝输出目录与基础目录/源归档重叠；增加2项回归检查。"
+  ]
+}

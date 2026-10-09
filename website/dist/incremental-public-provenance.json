@@ -1,0 +1,313 @@
+{
+  "batchId": "review-category-20261008-night-01",
+  "sourceCommit": "0d051fa85d79b82710f5b517b852b151ccc40797",
+  "oldPosts": 100,
+  "oldObjects": 108,
+  "newPosts": 20,
+  "newObjects": 20,
+  "finalPosts": 120,
+  "finalObjects": 128,
+  "retainedPreviousSkillReviews": 2,
+  "currentBatch": {
+    "batchId": "review-category-20261008-night-01",
+    "batchDate": "2026-10-08",
+    "newPosts": 20,
+    "newObjects": 20,
+    "addedPostIds": [
+      "971510",
+      "971460",
+      "971449",
+      "971438",
+      "971427",
+      "971421",
+      "971410",
+      "971405",
+      "971395",
+      "971390",
+      "971389",
+      "971380",
+      "971377",
+      "971373",
+      "971353",
+      "971349",
+      "971326",
+      "971310",
+      "971265",
+      "971245"
+    ],
+    "sourceCategory": "https://www.nodeseek.com/categories/review",
+    "captureStatuses": {
+      "ready": 9,
+      "partial": 11
+    },
+    "imagesCaptured": 52,
+    "imagesReviewed": 52
+  },
+  "provenance": [
+    {
+      "postId": "971510",
+      "sourceUrl": "https://www.nodeseek.com/post-971510-1",
+      "manifestSha256": "101387dd6abc77e7790183180e75a937c61cf98b9df93104784691d5167b5330",
+      "analysisSha256s": [
+        "5e78b4d84160d363b9a3b8657246fa8af27eb8103bcc617ae041ac4fcf0a18e6"
+      ],
+      "itemIds": [
+        "971510-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T16:09:23.553148+00:00"
+    },
+    {
+      "postId": "971460",
+      "sourceUrl": "https://www.nodeseek.com/post-971460-1",
+      "manifestSha256": "a7d0401268fab0b7b10e54eb76358cb77bc8ea3e62040b0cdaa6f338ab245337",
+      "analysisSha256s": [
+        "646c3798f134b4f559cab5f06a0895f886200cc04325965bf9ce6e37a85bdcba"
+      ],
+      "itemIds": [
+        "971460-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T16:16:05.491535+00:00"
+    },
+    {
+      "postId": "971449",
+      "sourceUrl": "https://www.nodeseek.com/post-971449-1",
+      "manifestSha256": "3f4e531216e386499e80d94261368f604cec3f372ab1dc407f0dc24721979d33",
+      "analysisSha256s": [
+        "d732e6e5d1e0a76daa6b6aa78266ad8fac02936ee4902d54583e4ef253bf0bd2"
+      ],
+      "itemIds": [
+        "971449-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T16:19:49.349116+00:00"
+    },
+    {
+      "postId": "971438",
+      "sourceUrl": "https://www.nodeseek.com/post-971438-1",
+      "manifestSha256": "5a8e95acc8c68b8aff463412b0a88050b529331cb263850d89a940f222e18868",
+      "analysisSha256s": [
+        "67f57d0a4080c04cc82f74984875119835f19ed342d7dfb139b8462fb2027175"
+      ],
+      "itemIds": [
+        "971438-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T16:53:29.647766+00:00"
+    },
+    {
+      "postId": "971427",
+      "sourceUrl": "https://www.nodeseek.com/post-971427-1",
+      "manifestSha256": "c3890738bdfde9ea19c61bfd826665142dc849fbe87b22e731bab5aecf5f7a8e",
+      "analysisSha256s": [
+        "83b76efad7abb646821b213604d6b67d6153237c0cc51a774683a388a33eb7f2"
+      ],
+      "itemIds": [
+        "971427-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T16:57:51.328996+00:00"
+    },
+    {
+      "postId": "971421",
+      "sourceUrl": "https://www.nodeseek.com/post-971421-1",
+      "manifestSha256": "5507a68395cd7a151f52af2e7a748cb013c0fd0b2efb2196648d0cc5d2abe6f4",
+      "analysisSha256s": [
+        "722d3665398741d83764ce79c173c5b7a6d3c310eff245ca3333bf28d9c1be90"
+      ],
+      "itemIds": [
+        "971421-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T16:59:17.028262+00:00"
+    },
+    {
+      "postId": "971410",
+      "sourceUrl": "https://www.nodeseek.com/post-971410-1",
+      "manifestSha256": "b60eb06ec121c8cb6701144902cc612f2448e51b0e01d72f15288c57b688af42",
+      "analysisSha256s": [
+        "b4e58376331167d9cc94441a3db4909429c617b3c93eac7b096d5223ed6f541d"
+      ],
+      "itemIds": [
+        "971410-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:00:50.920254+00:00"
+    },
+    {
+      "postId": "971405",
+      "sourceUrl": "https://www.nodeseek.com/post-971405-1",
+      "manifestSha256": "1a579dced5aebfc64ec206a22a82b52cecf414b816c4712c1d80f3e8d4623cf7",
+      "analysisSha256s": [
+        "bbcd192959bec72d9b3d6939376346d5d01c72b5307cf4a9995a2d2103bb8001"
+      ],
+      "itemIds": [
+        "971405-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:09:12.729911+00:00"
+    },
+    {
+      "postId": "971395",
+      "sourceUrl": "https://www.nodeseek.com/post-971395-1",
+      "manifestSha256": "501863bfb7fc78473a8fb2ecf645e4eb28192148a90e1206606b016f20840521",
+      "analysisSha256s": [
+        "87e026f59511e287a134fe1049499b84036f173aca7851bf197b82719425a11a"
+      ],
+      "itemIds": [
+        "971395-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T17:10:49.074486+00:00"
+    },
+    {
+      "postId": "971390",
+      "sourceUrl": "https://www.nodeseek.com/post-971390-1",
+      "manifestSha256": "299e21ef5913a67b4543773b0353e10e5f4dfd95c9af8920f1a23aba9c9db0e3",
+      "analysisSha256s": [
+        "4338387610ef855aa4bfe18f5a2c03d1c4bec4eacc7737c666ecdf67439f96b9"
+      ],
+      "itemIds": [
+        "971390-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:11:37.125560+00:00"
+    },
+    {
+      "postId": "971389",
+      "sourceUrl": "https://www.nodeseek.com/post-971389-1",
+      "manifestSha256": "a1f718995a857af9a82b4aeabb57c5b378ceccdefd862b1eb88c59965dc500f2",
+      "analysisSha256s": [
+        "4b560ffb453ba2cc17073a6be7075be9ebb3fca008982328bca13f785730fb3a"
+      ],
+      "itemIds": [
+        "971389-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:13:12.285770+00:00"
+    },
+    {
+      "postId": "971380",
+      "sourceUrl": "https://www.nodeseek.com/post-971380-1",
+      "manifestSha256": "5000a94adce7548561a113769e6aaa114ba03ee5a39879b90ae8fa2bf29b0ebc",
+      "analysisSha256s": [
+        "559ab62316df734810d28949f1f6cdce2da392e672687516f1a4e737e489c8f8"
+      ],
+      "itemIds": [
+        "971380-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T17:14:52.302930+00:00"
+    },
+    {
+      "postId": "971377",
+      "sourceUrl": "https://www.nodeseek.com/post-971377-1",
+      "manifestSha256": "df506c16cd48fae5833b0e42ce5a3c85a8bca85ceca9b6911c0b25e835b39309",
+      "analysisSha256s": [
+        "3df16631e998f69c3df367651e35938ccf329e54c57f9043e094c26346fa0aa4"
+      ],
+      "itemIds": [
+        "971377-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:16:27.185471+00:00"
+    },
+    {
+      "postId": "971373",
+      "sourceUrl": "https://www.nodeseek.com/post-971373-1",
+      "manifestSha256": "e11d87c0d2287b5cb786069f6300ac479ab2fa994f300b7886105b5c78b4c8ff",
+      "analysisSha256s": [
+        "06bf1192e9c90e6c472173417426da7bec53b8ef2c9cf1c1d156fe9b1ee1c043"
+      ],
+      "itemIds": [
+        "971373-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:17:43.366863+00:00"
+    },
+    {
+      "postId": "971353",
+      "sourceUrl": "https://www.nodeseek.com/post-971353-1",
+      "manifestSha256": "98d77e76cc073ce866ce1ac28daeb4898e89f5dade9f3510d608f0a82f5cb521",
+      "analysisSha256s": [
+        "4cb74a12549af6b0bc0818d69dcb458942727a4dca39dbcef28438243511fa60"
+      ],
+      "itemIds": [
+        "971353-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:19:01.587722+00:00"
+    },
+    {
+      "postId": "971349",
+      "sourceUrl": "https://www.nodeseek.com/post-971349-1",
+      "manifestSha256": "74e4df28141673d0c8555684be2497568abfa771ba60b8a96e9ede1c9f7242cb",
+      "analysisSha256s": [
+        "fc25022668a49751a4b62d0f1bb01f57e10e2d041da98b4e550b0dad1c58bc43"
+      ],
+      "itemIds": [
+        "971349-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:20:48.365620+00:00"
+    },
+    {
+      "postId": "971326",
+      "sourceUrl": "https://www.nodeseek.com/post-971326-1",
+      "manifestSha256": "6da7219576f229f01bb83e7f6b47e7e53d03e4175970483a12b541b88ed69072",
+      "analysisSha256s": [
+        "e241ff814570250e22f26661c06cf920c19418c819f77597ea5010a276aaf2e2"
+      ],
+      "itemIds": [
+        "971326-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:22:07.164973+00:00"
+    },
+    {
+      "postId": "971310",
+      "sourceUrl": "https://www.nodeseek.com/post-971310-1",
+      "manifestSha256": "3d2a01c4432d2df0b0368ef7082cebac805b609ff22259cf238afada81d81267",
+      "analysisSha256s": [
+        "989e8df2c8e6bae7428910f6762e8aac4d3e6cb7779133cd22c649c61e282fd5"
+      ],
+      "itemIds": [
+        "971310-1"
+      ],
+      "archiveStatus": "partial",
+      "capturedAt": "2026-10-08T17:23:57.176056+00:00"
+    },
+    {
+      "postId": "971265",
+      "sourceUrl": "https://www.nodeseek.com/post-971265-1",
+      "manifestSha256": "d0680eb3aa8b4516121324bc7d934384d00b3693410a152facfb892734fe89c3",
+      "analysisSha256s": [
+        "f34e376a749ac2ef5ca80c434edf4f229f7c61a18f1802d75023db3e3189a09b"
+      ],
+      "itemIds": [
+        "971265-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T17:25:19.584270+00:00"
+    },
+    {
+      "postId": "971245",
+      "sourceUrl": "https://www.nodeseek.com/post-971245-1",
+      "manifestSha256": "75d225542928b3547edddd9dc91995d708611d8281f067ccdd36d05b2931f4e4",
+      "analysisSha256s": [
+        "9f693897c0e09ab4fed0e2ff0678282a7713ad4f4bbc68eec24ae19e102b43ed"
+      ],
+      "itemIds": [
+        "971245-1"
+      ],
+      "archiveStatus": "ready",
+      "capturedAt": "2026-10-08T17:26:38.422139+00:00"
+    }
+  ],
+  "publicFiles": {
+    "data.json": "84564e532857dfd440ddb71bd8804e691472fe20e05740222a3fe137aca3524b",
+    "enrichment.json": "529892556e7a67615f98aa88139253c0c9d82f6353fd2641bdcf8d27aa4d4015",
+    "skill-refresh.json": "747273ccf5b6ef406ad0f9efcf27f054f18c107534543061d2f0dec4b24547d3"
+  }
+}

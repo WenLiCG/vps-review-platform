@@ -1,0 +1,467 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "name": "时间信息",
+      "count": 2
+    },
+    {
+      "name": "地理信息",
+      "count": 8
+    },
+    {
+      "name": "套餐信息",
+      "count": 4
+    },
+    {
+      "name": "系统基本信息",
+      "count": 3
+    },
+    {
+      "name": "CPU信息",
+      "count": 7
+    },
+    {
+      "name": "内存信息",
+      "count": 4
+    },
+    {
+      "name": "硬盘信息",
+      "count": 10
+    },
+    {
+      "name": "硬件得分",
+      "count": 5
+    },
+    {
+      "name": "网络信息",
+      "count": 10
+    }
+  ],
+  "fields": [
+    {
+      "key": "test_date",
+      "label": "测试日期",
+      "group": "时间信息",
+      "ui": "date_range",
+      "unit": "date",
+      "row": 2
+    },
+    {
+      "key": "test_time_bjt",
+      "label": "测试时间",
+      "group": "时间信息",
+      "ui": "time_range",
+      "unit": "Asia/Shanghai",
+      "row": 3
+    },
+    {
+      "key": "country_region",
+      "label": "国家/地区",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 4
+    },
+    {
+      "key": "city",
+      "label": "城市",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 5
+    },
+    {
+      "key": "usage_location",
+      "label": "使用地",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 6
+    },
+    {
+      "key": "registration_location",
+      "label": "注册地",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 7
+    },
+    {
+      "key": "datacenter",
+      "label": "机房/DC",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 8
+    },
+    {
+      "key": "provider",
+      "label": "商家",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 9
+    },
+    {
+      "key": "asn",
+      "label": "ASN(自治系统号)",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 10
+    },
+    {
+      "key": "organization",
+      "label": "组织",
+      "group": "地理信息",
+      "ui": "search_multiselect",
+      "unit": null,
+      "row": 11
+    },
+    {
+      "key": "monthly_price",
+      "label": "月均价格",
+      "group": "套餐信息",
+      "ui": "range_slider_and_inputs",
+      "unit": "currency/month",
+      "row": 12
+    },
+    {
+      "key": "billing_period",
+      "label": "付款周期",
+      "group": "套餐信息",
+      "ui": "display_only",
+      "unit": null,
+      "row": 13
+    },
+    {
+      "key": "monthly_traffic",
+      "label": "月流量",
+      "group": "套餐信息",
+      "ui": "minimum",
+      "unit": "TB/month",
+      "row": 14
+    },
+    {
+      "key": "traffic_billing",
+      "label": "流量计费",
+      "group": "套餐信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 15
+    },
+    {
+      "key": "virtualization",
+      "label": "虚拟化类型",
+      "group": "系统基本信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 16
+    },
+    {
+      "key": "architecture",
+      "label": "构架",
+      "group": "系统基本信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 17
+    },
+    {
+      "key": "operating_system",
+      "label": "操作系统",
+      "group": "系统基本信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 18
+    },
+    {
+      "key": "vcpu",
+      "label": "vCPU",
+      "group": "CPU信息",
+      "ui": "minimum",
+      "unit": "cores",
+      "row": 19
+    },
+    {
+      "key": "cpu_vendor",
+      "label": "CPU 厂商",
+      "group": "CPU信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 20
+    },
+    {
+      "key": "cpu_model",
+      "label": "CPU 型号系列",
+      "group": "CPU信息",
+      "ui": "search",
+      "unit": null,
+      "row": 21
+    },
+    {
+      "key": "sysbench_cpu_single",
+      "label": "Sysbench 单线程得分",
+      "group": "CPU信息",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 22
+    },
+    {
+      "key": "sysbench_cpu_multi",
+      "label": "Sysbench 多线程得分",
+      "group": "CPU信息",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 23
+    },
+    {
+      "key": "geekbench_single",
+      "label": "Geekbench 单核得分",
+      "group": "CPU信息",
+      "ui": "minimum",
+      "unit": "score",
+      "row": 24
+    },
+    {
+      "key": "geekbench_multi",
+      "label": "Geekbench 多核得分",
+      "group": "CPU信息",
+      "ui": "minimum",
+      "unit": "score",
+      "row": 25
+    },
+    {
+      "key": "memory_capacity",
+      "label": "内存",
+      "group": "内存信息",
+      "ui": "minimum",
+      "unit": "GB",
+      "row": 26
+    },
+    {
+      "key": "memory_overcommit_indicators",
+      "label": "超开指标",
+      "group": "内存信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 27
+    },
+    {
+      "key": "sysbench_memory_read",
+      "label": "Sysbench 读取",
+      "group": "内存信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 28
+    },
+    {
+      "key": "sysbench_memory_write",
+      "label": "Sysbench 写入",
+      "group": "内存信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 29
+    },
+    {
+      "key": "disk_capacity",
+      "label": "硬盘容量",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "GB",
+      "row": 30
+    },
+    {
+      "key": "disk_type",
+      "label": "硬盘类型",
+      "group": "硬盘信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 31
+    },
+    {
+      "key": "disk_rnd4k_q1_read",
+      "label": "硬盘性能 RND4K/Q1 读取",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 32
+    },
+    {
+      "key": "disk_rnd4k_q1_write",
+      "label": "硬盘性能 RND4K/Q1 写入",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 33
+    },
+    {
+      "key": "disk_rnd4k_q32_read",
+      "label": "硬盘性能 RND4K/Q32 读取",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 34
+    },
+    {
+      "key": "disk_rnd4k_q32_write",
+      "label": "硬盘性能 RND4K/Q32 写入",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 35
+    },
+    {
+      "key": "disk_seq1m_q1_read",
+      "label": "硬盘性能 SEQ1M/Q1 读取",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 36
+    },
+    {
+      "key": "disk_seq1m_q1_write",
+      "label": "硬盘性能 SEQ1M/Q1 写入",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 37
+    },
+    {
+      "key": "disk_seq1m_q8_read",
+      "label": "硬盘性能 SEQ1M/Q8 读取",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 38
+    },
+    {
+      "key": "disk_seq1m_q8_write",
+      "label": "硬盘性能 SEQ1M/Q8 写入",
+      "group": "硬盘信息",
+      "ui": "minimum",
+      "unit": "MB/s",
+      "row": 39
+    },
+    {
+      "key": "hardware_total_score",
+      "label": "性能总得分",
+      "group": "硬件得分",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 40
+    },
+    {
+      "key": "hardware_cpu_score",
+      "label": "CPU总得分",
+      "group": "硬件得分",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 41
+    },
+    {
+      "key": "hardware_gpu_score",
+      "label": "GPU总得分",
+      "group": "硬件得分",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 42
+    },
+    {
+      "key": "hardware_memory_score",
+      "label": "内存总得分",
+      "group": "硬件得分",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 43
+    },
+    {
+      "key": "hardware_disk_score",
+      "label": "硬盘总得分",
+      "group": "硬件得分",
+      "ui": "minimum",
+      "unit": "score_unspecified",
+      "row": 44
+    },
+    {
+      "key": "port_bandwidth",
+      "label": "端口带宽",
+      "group": "网络信息",
+      "ui": "minimum",
+      "unit": "Gbps",
+      "row": 45
+    },
+    {
+      "key": "ipv4_connectivity_type",
+      "label": "IP类型",
+      "group": "网络信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 46
+    },
+    {
+      "key": "ipv4_count",
+      "label": "IPv4 数量",
+      "group": "网络信息",
+      "ui": "minimum",
+      "unit": "count",
+      "row": 47
+    },
+    {
+      "key": "ipv6_availability",
+      "label": "IPv6",
+      "group": "网络信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 48
+    },
+    {
+      "key": "native_ip_status",
+      "label": "IP类型",
+      "group": "网络信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 49
+    },
+    {
+      "key": "outbound_routes",
+      "label": "三网去程",
+      "group": "网络信息",
+      "ui": "carrier_matrix",
+      "unit": null,
+      "row": 50
+    },
+    {
+      "key": "return_routes",
+      "label": "三网回程",
+      "group": "网络信息",
+      "ui": "carrier_matrix",
+      "unit": null,
+      "row": 51
+    },
+    {
+      "key": "ipv4_ping",
+      "label": "IPV4 ping值",
+      "group": "网络信息",
+      "ui": "carrier_matrix",
+      "unit": "ms_inferred",
+      "row": 52
+    },
+    {
+      "key": "ipv6_ping",
+      "label": "IPV6 ping值",
+      "group": "网络信息",
+      "ui": "carrier_matrix",
+      "unit": "ms_inferred",
+      "row": 53
+    },
+    {
+      "key": "nat_type",
+      "label": "NAT 类型",
+      "group": "网络信息",
+      "ui": "multiselect",
+      "unit": null,
+      "row": 54
+    }
+  ]
+}

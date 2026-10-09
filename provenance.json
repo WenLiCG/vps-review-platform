@@ -1,0 +1,54 @@
+{
+  "source_files": [
+    {
+      "source": "vps-review-analyze/SKILL.md",
+      "sha256": "ffc8317701189fafd385aa128efd3abee1d846cc39d000d35a0c64bbb1d1c0b6",
+      "copy": "vps_pipeline/vendor/vps-review-analyze/SKILL.md"
+    },
+    {
+      "source": "vps-review-analyze/references/contract.md",
+      "sha256": "8d59a51eddc596d1fabc6c04895d3504d03318c838f9fbcc96129c82c3771563",
+      "copy": "vps_pipeline/vendor/vps-review-analyze/references/contract.md"
+    },
+    {
+      "source": "vps-review-analyze/references/fields.json",
+      "sha256": "9b4558d269bd7270fb91da1f1bd922cc0a0603c9dd0065ddf3e0045038e89584",
+      "copy": "vps_pipeline/vendor/vps-review-analyze/references/fields.json"
+    },
+    {
+      "source": "vps-review-analyze/scripts/review.py",
+      "sha256": "3c559a3aa3581149490345a85f12b80d689f427e55c3c8d43251d37b6c6cd526",
+      "copy": "vps_pipeline/vendor/vps-review-analyze/scripts/review.py"
+    },
+    {
+      "source": "vps-review-analyze/scripts/test_review.py",
+      "sha256": "6bd1e7a46c75b64b1727a129ac1eb0a27feecfb404e9ff1d23ae741c14c3eb2c",
+      "copy": "vps_pipeline/vendor/vps-review-analyze/scripts/test_review.py"
+    },
+    {
+      "source": "forumcrawl/site_profiles.py",
+      "sha256": "457f4e09f5701f8cec7f3bdc4ffb6c22c38ce81e6667f62aed56cc5918271804",
+      "copy": "vendor/forumcrawl/site_profiles.py"
+    },
+    {
+      "source": "forumcrawl/README.md",
+      "sha256": "8fd9a525e27a93e66a52d0d7b4de66188683add7326264a587e3389ea6d191f5",
+      "copy": "vendor/forumcrawl/README.md"
+    }
+  ],
+  "license_files": [],
+  "license_note": "No standalone license was found in the scoped source directories. These are user-provided project/skill copies; no third-party open-source license is inferred. Preserve original ownership and obtain permission before public redistribution.",
+  "parser_reference_only": [
+    {
+      "source": "vps-review-download/SKILL.md",
+      "sha256": "2e2a2b4eca754bad923e08c46cba12867c7bee341a6dde390c3a62931c528c7b",
+      "use": "read-only DOM and linked-report scope reference; no original collector executed"
+    },
+    {
+      "source": "vps-review-download/scripts/download.py",
+      "sha256": "0c93d2bedc2af45385c0b2c654acb475e1386a4511a597508defe54dc6414eb0",
+      "use": "read-only DOM and linked-report scope reference; no original collector executed"
+    }
+  ],
+  "reference_project": "forumcrawl (user-provided source)"
+}

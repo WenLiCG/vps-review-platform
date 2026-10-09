@@ -1,0 +1,554 @@
+{
+  "schema_version": "vps-fields/1",
+  "fields": [
+    {
+      "id": "test_date",
+      "row": 2,
+      "label": "测试日期",
+      "group": "时间信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "保存最早可确认测试报告的北京时间日期，格式YYYY-MM-DD，跨日的其他报告日期保留在test_time中，不能用发帖日替代，未知为null。"
+    },
+    {
+      "id": "test_time",
+      "row": 3,
+      "label": "测试时间",
+      "group": "时间信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象含report_times（带已确认UTC偏移的ISO时间字符串数组）、timezone_basis（时区判断依据字符串）、half_hour_buckets（程序生成的北京时间YYYY-MM-DD HH:mm–HH:mm区间数组，跨日终点另带日期）；程序统一转换为+08:00，不得将报告时间跨度当测试耗时，时区不能确认时整个字段value为null、status为unknown并说明原因。"
+    },
+    {
+      "id": "country_region",
+      "row": 4,
+      "label": "国家/地区",
+      "group": "地理信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象含continent、country、region三个字符串或null，记录有证据的物理部署地区，保留美西等区域表达，不以IP库时区、注册地址或默认坐标代替实际位置。"
+    },
+    {
+      "id": "city",
+      "row": 5,
+      "label": "城市",
+      "group": "地理信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录有部署地点证据的物理城市，IP数据库城市只能作为另列证据，无法确认物理城市时为null。"
+    },
+    {
+      "id": "ip_usage_location",
+      "row": 6,
+      "label": "使用地",
+      "group": "地理信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为IP数据库报告的{country,continent}字符串或null成员对象，未报告的协议值为null，不据此覆盖物理地点。"
+    },
+    {
+      "id": "ip_registered_location",
+      "row": 7,
+      "label": "注册地",
+      "group": "地理信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为IP注册国家或地区字符串，未报告的协议值为null，注册地不代表服务器部署地。"
+    },
+    {
+      "id": "datacenter",
+      "row": 8,
+      "label": "机房/DC",
+      "group": "地理信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "仅记录有来源明确指向本实例的机房名称或编号，不把套餐代号、城市、ASN归属组织当具体机房，未知为null。"
+    },
+    {
+      "id": "provider",
+      "row": 9,
+      "label": "商家",
+      "group": "地理信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录向用户销售该VPS的商家品牌，不用IP归属组织或线路上游替代，未知为null。"
+    },
+    {
+      "id": "asn",
+      "row": 10,
+      "label": "ASN(自治系统号)",
+      "group": "地理信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为报告中的AS加数字字符串，未报告的协议值为null，Hosting等用途分类不属于ASN。"
+    },
+    {
+      "id": "ip_organization",
+      "row": 11,
+      "label": "组织",
+      "group": "地理信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为IP或ASN数据库给出的组织名称字符串，未报告的协议值为null，允许与销售商不同。"
+    },
+    {
+      "id": "monthly_price",
+      "row": 12,
+      "label": "月均价格",
+      "group": "套餐信息",
+      "value_type": "object",
+      "unit": "currency/month",
+      "definition": "对象含amount（按明确付款周期折算的月均数字或null）和currency（ISO货币代码或null），刀按USD、O或欧按EUR、未写币种按模板约定USD并记录该假设，不擅自换汇或混同首期与续费价。"
+    },
+    {
+      "id": "billing_period",
+      "row": 13,
+      "label": "付款周期",
+      "group": "套餐信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录来源明确的实际账单周期，如monthly、quarterly、semiannual、annual或biennial，仅有每月等效报价不能证明月付，未明确时为null。"
+    },
+    {
+      "id": "monthly_transfer_tb",
+      "row": 14,
+      "label": "月流量",
+      "group": "套餐信息",
+      "value_type": "number",
+      "unit": "TB/month",
+      "definition": "保存本实例已确认的每月流量配额数值并明确单位换算依据，未知或不限量时为null且由transfer_billing区分，不用测速吞吐量推导配额或将当前同名套餐当历史配置。"
+    },
+    {
+      "id": "transfer_billing",
+      "row": 15,
+      "label": "流量计费",
+      "group": "套餐信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "按证据记录outbound_only、inbound_only、both_directions、unmetered或其他明确规则，单向未指明方向时保留one_direction_unspecified，缺少计费口径则为null并将推断另注。"
+    },
+    {
+      "id": "virtualization",
+      "row": 16,
+      "label": "虚拟化类型",
+      "group": "系统基本信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录报告检测到的KVM、LXC、OpenVZ等虚拟化类型，未提供为null，不由CPU品牌推断。"
+    },
+    {
+      "id": "architecture",
+      "row": 17,
+      "label": "构架",
+      "group": "系统基本信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "规范保存报告的处理器架构，如x86_64或aarch64，未知为null。"
+    },
+    {
+      "id": "operating_system",
+      "row": 18,
+      "label": "操作系统",
+      "group": "系统基本信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录实际测试时的系统发行版和版本，内核可放该字段note，不把商家支持的系统列表当已安装系统，未知为null。"
+    },
+    {
+      "id": "vcpu",
+      "row": 19,
+      "label": "vCPU",
+      "group": "CPU信息",
+      "value_type": "number",
+      "unit": "vCPU",
+      "definition": "保存实例可见的虚拟CPU数量整数，分别保留核心和线程原始证据，不将vCPU声称为独占宿主机物理核心，未知为null。"
+    },
+    {
+      "id": "cpu_vendor",
+      "row": 20,
+      "label": "CPU 厂商",
+      "group": "CPU信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "从实际报告CPU型号识别Intel、AMD等厂商，无法识别则为null。"
+    },
+    {
+      "id": "cpu_model",
+      "row": 21,
+      "label": "CPU 型号系列",
+      "group": "CPU信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "保留报告实际CPU型号、系列及可见主频，不用当前产品页的另一型号覆盖测试实例，未知为null。"
+    },
+    {
+      "id": "sysbench_single_score",
+      "row": 22,
+      "label": "Sysbench 单线程得分",
+      "group": "CPU信息",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存CPU Sysbench单线程原始数值，测试参数和版本有则保留在该字段note，未测或失败为null。"
+    },
+    {
+      "id": "sysbench_multi_score",
+      "row": 23,
+      "label": "Sysbench 多线程得分",
+      "group": "CPU信息",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存CPU Sysbench多线程原始数值，不用单线程乘线程数补造结果，未测或失败为null。"
+    },
+    {
+      "id": "geekbench_single_score",
+      "row": 24,
+      "label": "Geekbench 单核得分",
+      "group": "CPU信息",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存Geekbench单核数值并在该字段note记录主版本，不同主版本不能直接按同一评分口径比较，未测或失败为null。"
+    },
+    {
+      "id": "geekbench_multi_score",
+      "row": 25,
+      "label": "Geekbench 多核得分",
+      "group": "CPU信息",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存Geekbench多核数值并在该字段note记录主版本，不能用其他版本或CPU型号的成绩替代，未测或失败为null。"
+    },
+    {
+      "id": "memory_gb",
+      "row": 26,
+      "label": "内存",
+      "group": "内存信息",
+      "value_type": "number",
+      "unit": "GB",
+      "definition": "保存报告实际识别的总内存数值，按明确单位换算并保留原始单位依据，标称容量另存该字段note，不以标称值覆盖实测值，未知为null。"
+    },
+    {
+      "id": "memory_overcommit",
+      "row": 27,
+      "label": "超开指标",
+      "group": "内存信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象含balloon和ksm，各值为detected、not_detected或null，仅表示报告检测状态，不能仅凭气球设备或KSM标识断言实际超售程度。"
+    },
+    {
+      "id": "memory_read_mbps",
+      "row": 28,
+      "label": "Sysbench 读取",
+      "group": "内存信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存Sysbench内存读取吞吐量数值，MB/s是字节每秒且不同于网络Mbps，原报告若用MiB/s须明确换算，未测为null。"
+    },
+    {
+      "id": "memory_write_mbps",
+      "row": 29,
+      "label": "Sysbench 写入",
+      "group": "内存信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存Sysbench内存写入吞吐量数值，MB/s是字节每秒且不同于网络Mbps，原报告若用MiB/s须明确换算，未测为null。"
+    },
+    {
+      "id": "disk_gb",
+      "row": 30,
+      "label": "硬盘容量",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "GB",
+      "definition": "保存报告实际检测的总磁盘容量数值并保留单位依据，不将可用容量或已用容量当总容量，标称配额另存该字段note，未知为null。"
+    },
+    {
+      "id": "disk_type",
+      "row": 31,
+      "label": "硬盘类型",
+      "group": "硬盘信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "仅在证据支持时记录NVMe SSD、SATA SSD、HDD等底层介质，vda或DISK仅表明虚拟块设备，无法确定介质则为null，当前官网标称另注。"
+    },
+    {
+      "id": "disk_rnd4k_q1_read_mbps",
+      "row": 32,
+      "label": "硬盘性能 RND4K/Q1 读取",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存4K随机读取队列深度1的吞吐量数值，不把同列IOPS当MB/s，明确字节单位换算，未测或失败为null。"
+    },
+    {
+      "id": "disk_rnd4k_q1_write_mbps",
+      "row": 33,
+      "label": "硬盘性能 RND4K/Q1 写入",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存4K随机写入队列深度1的吞吐量数值，不把同列IOPS当MB/s，明确字节单位换算，未测或失败为null。"
+    },
+    {
+      "id": "disk_rnd4k_q32_read_mbps",
+      "row": 34,
+      "label": "硬盘性能 RND4K/Q32 读取",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存4K随机读取队列深度32的吞吐量数值，不混入Q1或顺序读取结果，未测或失败为null。"
+    },
+    {
+      "id": "disk_rnd4k_q32_write_mbps",
+      "row": 35,
+      "label": "硬盘性能 RND4K/Q32 写入",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存4K随机写入队列深度32的吞吐量数值，不混入Q1或顺序写入结果，未测或失败为null。"
+    },
+    {
+      "id": "disk_seq1m_q1_read_mbps",
+      "row": 36,
+      "label": "硬盘性能 SEQ1M/Q1 读取",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存1M顺序读取队列深度1的吞吐量数值，不与4K随机结果或IOPS混用，未测或失败为null。"
+    },
+    {
+      "id": "disk_seq1m_q1_write_mbps",
+      "row": 37,
+      "label": "硬盘性能 SEQ1M/Q1 写入",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存1M顺序写入队列深度1的吞吐量数值，不与4K随机结果或IOPS混用，未测或失败为null。"
+    },
+    {
+      "id": "disk_seq1m_q8_read_mbps",
+      "row": 38,
+      "label": "硬盘性能 SEQ1M/Q8 读取",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存1M顺序读取队列深度8的吞吐量数值，不用峰值替换其他队列深度的结果，未测或失败为null。"
+    },
+    {
+      "id": "disk_seq1m_q8_write_mbps",
+      "row": 39,
+      "label": "硬盘性能 SEQ1M/Q8 写入",
+      "group": "硬盘信息",
+      "value_type": "number",
+      "unit": "MB/s",
+      "definition": "保存1M顺序写入队列深度8的吞吐量数值，不用峰值替换其他队列深度的结果，未测或失败为null。"
+    },
+    {
+      "id": "hardware_total_score",
+      "row": 40,
+      "label": "性能总得分",
+      "group": "硬件得分",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存报告硬件评分体系的总分原值并保留体系及版本依据，不与Geekbench或Sysbench分数相加，未提供为null。"
+    },
+    {
+      "id": "hardware_cpu_score",
+      "row": 41,
+      "label": "CPU总得分",
+      "group": "硬件得分",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存同一硬件评分体系的CPU分项分数，不用CPU单核、多核成绩替代，未提供为null。"
+    },
+    {
+      "id": "hardware_gpu_score",
+      "row": 42,
+      "label": "GPU总得分",
+      "group": "硬件得分",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存同一硬件评分体系的GPU分项数值，N/A、未检测或失败为null而不是0，也不据此断言没有GPU。"
+    },
+    {
+      "id": "hardware_memory_score",
+      "row": 43,
+      "label": "内存总得分",
+      "group": "硬件得分",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存同一硬件评分体系的内存分项数值，不把容量或读写速率当分数，未提供为null。"
+    },
+    {
+      "id": "hardware_disk_score",
+      "row": 44,
+      "label": "硬盘总得分",
+      "group": "硬件得分",
+      "value_type": "number",
+      "unit": "score",
+      "definition": "保存同一硬件评分体系的磁盘分项数值，不把IOPS或吞吐量当分数，未提供为null。"
+    },
+    {
+      "id": "port_bandwidth_mbps",
+      "row": 45,
+      "label": "端口带宽",
+      "group": "网络信息",
+      "value_type": "number",
+      "unit": "Mbps",
+      "definition": "保存端口限速规格并以1Gbps等于1000Mbps换算，测速峰值另存该字段note；当前套餐与历史实例无法对应时，仅可用official_current标记官网补充值，不能标reported。"
+    },
+    {
+      "id": "ip_connectivity",
+      "row": 46,
+      "label": "IP类型",
+      "group": "网络信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "记录无IPv4、NAT、独立公网IPv4或多IP等接入形态，不把原生IP和机房用途分类填入此项，未知为null。"
+    },
+    {
+      "id": "ipv4_count",
+      "row": 47,
+      "label": "IPv4 数量",
+      "group": "网络信息",
+      "value_type": "number",
+      "unit": "count",
+      "definition": "保存证据确认的实例IPv4配额整数，仅报告出现一个地址不能断言总配额，出现地址数量可另存该字段note，配额未知为null。"
+    },
+    {
+      "id": "ipv6_connectivity",
+      "row": 48,
+      "label": "IPv6",
+      "group": "网络信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "按报告证据保存dual_stack、ipv6_only、available或unavailable等IPv6可用形态，未检测为null且不能从单个IPv6地址推断分配前缀大小。"
+    },
+    {
+      "id": "routes_to_server",
+      "row": 49,
+      "label": "三网去程",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为含telecom、unicom、mobile的对象或null，运营商值为中国用户至服务器的已测线路字符串或null，不用回程代替去程，城市及TCP/UDP差异放该字段note。"
+    },
+    {
+      "id": "routes_from_server",
+      "row": 50,
+      "label": "三网回程",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值为含telecom、unicom、mobile的对象或null，运营商值为服务器至中国用户的已测线路字符串或null，仅按有证据的AS及路由识别163、4837、CMI等，NoData不能写为已连通。"
+    },
+    {
+      "id": "ipv4_latency",
+      "row": 51,
+      "label": "IPV4 ping值",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "ms",
+      "definition": "IPv4对象固定含telecom、unicom、mobile，各值为{mean_ms:number|null,sample_count:number|null,method:string|null}，method注明ICMP或TCP及样本和加权口径，源报告用0或ERROR表示失败时排除而不当零延迟，无有效样本均值为null且已知有效数为0。"
+    },
+    {
+      "id": "ipv6_latency",
+      "row": 52,
+      "label": "IPV6 ping值",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "ms",
+      "definition": "IPv6对象固定含telecom、unicom、mobile，各值为{mean_ms:number|null,sample_count:number|null,method:string|null}，独立于IPv4计算并说明ICMP或TCP及样本和加权口径，源报告失败占位值排除，无有效样本均值为null且已知有效数为0。"
+    },
+    {
+      "id": "nat_type",
+      "row": 53,
+      "label": "NAT 类型",
+      "group": "网络信息",
+      "value_type": "string",
+      "unit": null,
+      "definition": "照报告记录开放无NAT、Full Cone、Restricted、Symmetric等检测结果，不把未知或检测失败归为无NAT，未知为null。"
+    },
+    {
+      "id": "ip_origin",
+      "row": 54,
+      "label": "IP类型",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值按报告标识保存native或broadcast，未知为null，原生IP不等于住宅IP也不保证流媒体解锁。"
+    },
+    {
+      "id": "ip_classifications",
+      "row": 55,
+      "label": "IP类型",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各协议值为{usage_counts,company_counts}或null，usage_counts和company_counts各为分类计数字典或null，字典按hosting、business、residential等实际类别保存非负整数或null并保留数据库明细，不混合使用类型与公司类型或把判定数量当IP数量。"
+    },
+    {
+      "id": "risk_counts",
+      "row": 56,
+      "label": "风险评分",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各协议值为{very_low,low,medium,high,very_high,suspicious}计数对象或null，每项为非负整数或null，严格低风险只计low而不合并very_low，未知不能置0且每个有效数据库判定只计一次。"
+    },
+    {
+      "id": "blacklist_count",
+      "row": 57,
+      "label": "IP黑名单",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各值为该协议在黑名单检测中明确列入黑名单的非负整数或null，未知不填0且不按模板备注误取低风险数据库数量。"
+    },
+    {
+      "id": "flagged_count",
+      "row": 58,
+      "label": "IP已标记",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各值为黑名单检测中已标记的非负整数或null，已标记与已入黑名单分别统计，未知不填0且不取低风险数量。"
+    },
+    {
+      "id": "unlock_count",
+      "row": 59,
+      "label": "流媒体检测-解锁",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各值为报告明确完整解锁的流媒体及AI服务去重项数整数或null，仅自制、屏蔽、失败、未知及仅地区标签不计完整解锁，未测协议为null。"
+    },
+    {
+      "id": "native_count",
+      "row": 60,
+      "label": "流媒体检测-原生",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": "count",
+      "definition": "对象固定含ipv4、ipv6，各值为服务检测方式明确标注原生的去重项数整数或null，即使仅自制也可计原生但不计完整解锁，不能用IP整体原生标签推导服务原生数量。"
+    },
+    {
+      "id": "smtp25_outbound",
+      "row": 61,
+      "label": "25端口出站",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值仅依据本机25端口出站测试保存available、blocked或null，检测失败或未测为null而不擅自当阻断，远端邮件站点连通性另记。"
+    },
+    {
+      "id": "smtp25_inbound",
+      "row": 62,
+      "label": "25端口入站",
+      "group": "网络信息",
+      "value_type": "object",
+      "unit": null,
+      "definition": "对象固定含ipv4、ipv6，各值仅依据外部连接本机25端口的入站测试保存available、blocked或null，未做入站测试为null，不能用出站结果或访问邮件服务商的结果代替。"
+    }
+  ]
+}

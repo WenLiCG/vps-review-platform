@@ -1,0 +1,4 @@
+interface:
+  display_name: "VPS 评测下载"
+  short_description: "批量归档 NodeSeek 首帖、图片和报告，提供可重试的原始证据"
+  default_prompt: "使用 $vps-review-download 下载我指定的 NodeSeek 评测首帖及图片，保存到本地归档。"

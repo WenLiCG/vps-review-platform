@@ -1,0 +1,2 @@
+# Backend runtime uses only Python 3.11+ standard library.
+# The original analysis validator and schema are vendored as package data.

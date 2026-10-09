@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-09T00:53:20Z",
+  "sourceWebsiteCommit": "94eb3bf5cf05828da2f88273e13654c2443d410f",
+  "sourceWebsiteFilesExact": 15,
+  "sourceSkillFilesExact": 10,
+  "skillDownloadSelfTests": {
+    "passed": true,
+    "unitTests": 7
+  },
+  "skillAnalyzeSelfTests": {
+    "passed": true,
+    "scope": "AI reading gate,61fields,provenance,types,hash/path,timezones,missing-vs-zero,means,idempotence,safe replacement"
+  },
+  "bridgeSyntheticTests": {
+    "passed": true,
+    "unitTests": 40
+  },
+  "siteRuntimeTests": {
+    "passed": true,
+    "assertions": 66,
+    "mockDomHosts": 52,
+    "errors": [],
+    "realBrowserVisualQA": false
+  },
+  "staticDeploymentZip": {
+    "generatedSuccessfully": true,
+    "publicFiles": 12,
+    "crcCheckPassed": true
+  },
+  "liveSiteChanged": false,
+  "newCollectionRun": false,
+  "environment": {
+    "python": "3.12.14",
+    "node": "v24.19.0"
+  },
+  "limits": [
+    "Browser visual/layout testing was not performed for this packaging task.",
+    "No deployment to a second hosting provider was performed.",
+    "Package contains public facts only; private analysis input archives are separate."
+  ]
+}
