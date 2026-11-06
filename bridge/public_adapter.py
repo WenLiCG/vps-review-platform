@@ -164,10 +164,15 @@ def project(analysis,manifest,definitions,catalog,post_dir,item_id=None):
   for ev in f.get('evidence',[]):
    file=files.get(ev.get('file_id'));refs.append({'sourceKind':'manifest'if file is None else file['role'],'assetId':clean_text(ev.get('file_id'),120),'sha256':file.get('sha256')if file else None,'locator':clean_text(ev.get('locator'),180)})
   eligible=status in {'reported','computed'}
-  if fid=='monthly_price'and status=='inferred'and isinstance(value,dict)and number(value.get('amount')):
+  if fid=='monthly_price'and isinstance(value,dict)and number(value.get('amount')):
    note_raw=f.get('note','')
-   if value.get('currency')=='USD'and re.search(r'默认\s*(?:USD|美元)|刀.*(?:USD|美元)',note_raw,re.I):eligible=True
-   if value.get('currency')=='EUR'and re.search(r'(?:约定|识别|按).*(?:EUR|欧元)',note_raw,re.I)and re.search(r'[Oo]|欧',note_raw):eligible=True
+   if re.search(r'(?:未写|没有|缺)币种|默认\s*(?:USD|美元)',note_raw):
+    value={**value,'currency':None}
+    eligible=False
+    status='unknown'
+   elif status=='inferred':
+    if value.get('currency')=='USD'and re.search(r'刀',note_raw)and re.search(r'USD|美元',note_raw,re.I):eligible=True
+    if value.get('currency')=='EUR'and re.search(r'(?:约定|识别|按).*(?:EUR|欧元)',note_raw,re.I)and re.search(r'[Oo]|欧',note_raw):eligible=True
   # Statistical/semantic compatibility still needs explicit source details.
   if fid in {'sysbench_single_score','sysbench_multi_score','memory_read_mbps','memory_write_mbps'}or fid in {'ipv4_latency','ipv6_latency','ip_origin'}:eligible=False
   comparison_key=None

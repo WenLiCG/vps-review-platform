@@ -1,0 +1,22 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "disk_gib",
+    "path": "$.plans.0.fields.disk_unit",
+    "equals": "GiB"
+  },
+  {
+    "name": "traffic_gb",
+    "path": "$.plans.0.fields.traffic_unit",
+    "equals": "GB"
+  }
+]

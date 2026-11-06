@@ -1,0 +1,26 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "no_gia",
+    "path": "$.observations.0.routes.0.route_tags",
+    "equals": []
+  },
+  {
+    "name": "asn",
+    "path": "$.observations.0.routes.0.asn_path",
+    "equals": [
+      4134,
+      4809,
+      3491
+    ]
+  }
+]

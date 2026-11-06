@@ -21,7 +21,8 @@
     "export-v5"
   ],
   "private_evidence_export": "export-evidence",
-  "original_skill_modified": false,
+  "original_skill_modified": true,
+  "original_skill_modification": "monthly_price definition no longer defaults a missing currency to USD",
   "network_collection_tested_live": false,
   "deployment_changed": false,
   "prior_backend_versions_preserved": [

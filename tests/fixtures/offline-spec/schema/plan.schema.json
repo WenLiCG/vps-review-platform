@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/vps-review/schemas/plan.json",
+  "title": "PlanFact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_id",
+    "fields",
+    "prices"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "provider_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vcpu": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "memory_mb": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "disk_value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "disk_unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "GB",
+            "GiB",
+            null
+          ]
+        },
+        "disk_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "traffic_value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "traffic_unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "GB",
+            "GiB",
+            "TB",
+            "TiB",
+            null
+          ]
+        },
+        "port_mbps": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "ipv4_mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "dedicated",
+            "nat",
+            "none",
+            "unknown",
+            null
+          ]
+        },
+        "virtualization": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "region_label": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "country_code": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "city": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "field_evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "evidence.json"
+      }
+    },
+    "prices": {
+      "type": "array",
+      "items": {
+        "$ref": "price-snapshot.json"
+      }
+    }
+  }
+}

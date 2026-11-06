@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/vps-review/schemas/review-document.json",
+  "title": "NormalizedReviewDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "synthetic",
+    "source",
+    "plans",
+    "observations",
+    "derived",
+    "export",
+    "review_status",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "synthetic_disclaimer": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "site",
+        "source_post_id",
+        "url",
+        "author",
+        "published_at",
+        "fetched_at",
+        "parser_version"
+      ],
+      "properties": {
+        "site": {
+          "type": "string"
+        },
+        "source_post_id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fetched_at": {
+          "type": "string"
+        },
+        "parser_version": {
+          "type": "string"
+        },
+        "first_post_only": {
+          "const": true
+        }
+      }
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "$ref": "plan.json"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "observation.json"
+      }
+    },
+    "derived": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tags",
+        "aggregates",
+        "sample_policy"
+      ],
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "aggregates": {
+          "type": "object",
+          "properties": {
+            "route_stability": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "gb6_single_median": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "gb6_single_samples": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "sample_policy": {
+          "type": "object",
+          "required": [
+            "min_samples_for_stability_tag",
+            "dedupe_by_run_id"
+          ],
+          "properties": {
+            "min_samples_for_stability_tag": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "dedupe_by_run_id": {
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "required": [
+        "suggested_filename",
+        "collision_suffix"
+      ],
+      "properties": {
+        "suggested_filename": {
+          "type": "string"
+        },
+        "collision_suffix": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filename_notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "review_status": {
+      "type": "object",
+      "required": [
+        "state",
+        "needs_human"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "draft",
+            "auto_ok",
+            "needs_review",
+            "approved",
+            "rejected"
+          ]
+        },
+        "needs_human": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "text",
+        "limited_claim"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "limited_claim": {
+          "type": "boolean"
+        },
+        "based_on_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unit_notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

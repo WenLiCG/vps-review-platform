@@ -1,0 +1,2 @@
+Geekbench 5 Single Core 1100
+Geekbench 6 Single Core 1400

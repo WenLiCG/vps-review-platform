@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/vps-review/schemas/price-snapshot.json",
+  "title": "PriceSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "currency",
+    "billing_period_months",
+    "amount",
+    "term_role",
+    "evidence"
+  ],
+  "properties": {
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "billing_period_months": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "amount": {
+      "type": "number"
+    },
+    "term_role": {
+      "enum": [
+        "first_term",
+        "renewal",
+        "unknown"
+      ]
+    },
+    "monthly_equivalent": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "coupon_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "$ref": "evidence.json"
+    }
+  }
+}

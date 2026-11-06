@@ -1,0 +1,17 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "three_prices",
+    "path": "$.plans.0.prices",
+    "length": 3
+  }
+]

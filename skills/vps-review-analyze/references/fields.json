@@ -98,7 +98,7 @@
       "group": "套餐信息",
       "value_type": "object",
       "unit": "currency/month",
-      "definition": "对象含amount（按明确付款周期折算的月均数字或null）和currency（ISO货币代码或null），刀按USD、O或欧按EUR、未写币种按模板约定USD并记录该假设，不擅自换汇或混同首期与续费价。"
+      "definition": "对象含amount（按明确付款周期折算的月均数字或null）和currency（ISO货币代码或null）。刀可记为USD，O或欧可记为EUR。原文没有币种时 currency 必须为 null、status 为 unknown，不得默认 USD。不擅自换汇，不把首期价写成续费价。"
     },
     {
       "id": "billing_period",

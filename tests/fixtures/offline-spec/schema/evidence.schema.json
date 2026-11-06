@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/vps-review/schemas/evidence.json",
+  "title": "FieldEvidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "confidence",
+    "extractor"
+  ],
+  "properties": {
+    "kind": {
+      "enum": [
+        "text_quote",
+        "ocr_expected",
+        "derived",
+        "absent"
+      ]
+    },
+    "quote": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "asset_ref": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "占位资源引用；不要求真实图片文件"
+    },
+    "region_box": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "w": {
+          "type": "number"
+        },
+        "h": {
+          "type": "number"
+        },
+        "unit": {
+          "enum": [
+            "px_norm_0_1",
+            "px_abs"
+          ]
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h",
+        "unit"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "extractor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
