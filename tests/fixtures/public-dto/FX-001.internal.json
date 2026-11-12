@@ -1,0 +1,73 @@
+{
+  "synthetic": true,
+  "notice": "人工构造，非真实帖子",
+  "sample_id": "FX-001",
+  "post_id": "synth-001",
+  "canonical_url": "https://synthetic.example/post/synth-001",
+  "vendor_raw": "示例云",
+  "published_date": "2025-06-04",
+  "published_tz": "+08:00",
+  "review_date": "2025-06-03",
+  "review_date_precision": "day",
+  "tested_at_beijing": "2025-06-03T21:00:00+08:00",
+  "plans": [
+    {
+      "plan_id": "synth-001-plan-a",
+      "plan_label": "London Mini",
+      "location": {
+        "raw": "欧洲/伦敦",
+        "continent": "欧洲",
+        "city": "伦敦",
+        "country": "GB"
+      },
+      "vcpu": 2,
+      "memory_mb": 4096,
+      "disk_total_value": 40,
+      "disk_total_unit": "GB",
+      "disk_type": "NVMe",
+      "traffic_value": 1,
+      "traffic_unit": "TB",
+      "port_speed_mbps": 1000,
+      "field_evidence": {
+        "vcpu": {
+          "kind": "text_quote",
+          "quote": "2核",
+          "locator": "capture/tab-basic.txt"
+        }
+      }
+    }
+  ],
+  "prices": [
+    {
+      "plan_id": "synth-001-plan-a",
+      "amount": 10,
+      "currency": "USD",
+      "billing_period_months": 1,
+      "term_role": "renewal",
+      "monthly_equivalent": 10,
+      "price_status": "known"
+    }
+  ],
+  "observations": [
+    {
+      "plan_id": "synth-001-plan-a",
+      "metric": "geekbench6_single",
+      "value": 1420
+    }
+  ],
+  "conflict_flags": [],
+  "summary": {
+    "text": "基于已抽取字段：伦敦 2C4G40G，续费约 10 USD/月，GB6 单核 1420。",
+    "limited_claim": true
+  },
+  "private_key": "pk_synth_do_not_publish_FX001",
+  "original_image_url": "https://cdn.synthetic.example/original/fx001-hero.png",
+  "raw_body": "INTERNAL RAW BODY MARKER FX001-SECRET-BODY",
+  "secrets": "sk_live_synth_fx001_not_for_public",
+  "author": "fixture_author_a",
+  "capture_file": "capture/tab-basic.txt",
+  "raw_excerpt": "INTERNAL RAW BODY MARKER FX001-SECRET-BODY",
+  "evidenceRefs": [
+    "capture/tab-basic.txt"
+  ]
+}

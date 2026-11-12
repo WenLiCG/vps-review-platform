@@ -1,0 +1,46 @@
+{
+  "schema_version": "public-dto/v1",
+  "offers": [
+    {
+      "offer_id": "FX-001",
+      "post_id": "synth-001",
+      "canonical_url": "https://synthetic.example/post/synth-001",
+      "vendor_raw": "示例云",
+      "published_date": "2025-06-04",
+      "published_tz": "+08:00",
+      "review_date": "2025-06-03",
+      "review_date_precision": "day",
+      "tested_at_beijing": "2025-06-03T21:00:00+08:00",
+      "aff_url": null,
+      "plan_label": "London Mini",
+      "vcpu": 2,
+      "memory_mb": 4096,
+      "disk_total_value": 40,
+      "disk_total_unit": "GB",
+      "disk_type": "NVMe",
+      "traffic_value": 1,
+      "traffic_unit": "TB",
+      "port_speed_mbps": 1000,
+      "location": {
+        "raw": "欧洲/伦敦",
+        "continent": "欧洲",
+        "city": "伦敦",
+        "country": "GB"
+      },
+      "price": {
+        "amount": 10,
+        "currency": "USD",
+        "billing_period_months": 1,
+        "term_role": "renewal",
+        "monthly_equivalent": 10,
+        "price_status": "known"
+      },
+      "observations_summary": {
+        "geekbench6_single": 1420
+      },
+      "conflict_flags": [],
+      "summary_text": "基于已抽取字段：伦敦 2C4G40G，续费约 10 USD/月，GB6 单核 1420。",
+      "limited_claim": true
+    }
+  ]
+}
