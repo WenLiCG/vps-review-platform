@@ -142,3 +142,20 @@ class PublicDTOProjectionTests(unittest.TestCase):
         internal['summary']['text'] = '人工撰写的另一条有限简评。'
         dto = project_to_public_dto(internal)
         self.assertEqual(dto['offers'][0]['summary_text'], '人工撰写的另一条有限简评。')
+
+
+class PublicDTOWhitelistNegativeTests(unittest.TestCase):
+    def test_whitelist_rejects_injected_evidence_image_url_field_and_unknown_then_passes_when_removed(self):
+        for key, value in (
+            ('evidence', {'quote': '2核'}),
+            ('original_image_url', 'https://cdn.synthetic.example/original/fx001-hero.png'),
+            ('unexpected_extra', 'nope'),
+        ):
+            with self.subTest(injection=key):
+                dto = expected_dto()
+                dto['offers'][0][key] = value
+                with self.assertRaisesRegex(ValueError, r'\S', msg=f'{key} injection must be rejected'):
+                    validate_public_dto(dto)
+                del dto['offers'][0][key]
+                self.assertEqual(dto, expected_dto())
+                self.assertIsNone(validate_public_dto(dto), f'{key} removal must restore valid DTO')

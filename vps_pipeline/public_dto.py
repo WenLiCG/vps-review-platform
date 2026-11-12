@@ -4,7 +4,7 @@ Only the JSON Schema subset used by PUBLIC_SCHEMA is implemented here.
 """
 import argparse
 from copy import deepcopy
-from html import escape
+from html import escape, unescape
 import json
 import math
 from pathlib import Path
@@ -90,6 +90,48 @@ def validate_public_dto(obj: dict) -> None:
     _validate(obj, PUBLIC_SCHEMA, '$')
 
 
+def scan_public_output(path: str | Path) -> None:
+    """Reject evidence keys and HTTPS image URLs in UTF-8 public text files.
+
+    This targeted leak check complements the DTO whitelist; it is not a
+    general guarantee that arbitrary public prose contains no private data.
+    """
+    path = Path(path)
+    files = sorted(path.rglob('*')) if path.is_dir() else [path]
+    image_url = re.compile(
+        r'https://[^\s<>"\'\\]+?\.(?:png|jpe?g|webp|gif)(?=$|[?#\s<>"\'\)\],;])',
+        re.IGNORECASE,
+    )
+    for file in files:
+        if not file.is_file():
+            continue
+        try:
+            source = file.read_text(encoding='utf-8-sig')
+        except UnicodeDecodeError:
+            continue
+        if '\x00' in source:
+            continue
+
+        def inspect_pairs(pairs):
+            for key, value in pairs:
+                if key == 'evidence':
+                    raise ValueError(f'{file}: forbidden evidence key')
+            return dict(pairs)
+
+        try:
+            data = json.loads(source, object_pairs_hook=inspect_pairs)
+        except json.JSONDecodeError:
+            # Also cover JSON fragments embedded in HTML or other text.
+            if re.search(r'"evidence"\s*:', unescape(source)):
+                raise ValueError(f'{file}: forbidden evidence key')
+            decoded = source
+        else:
+            # Decode JSON string escapes before inspecting URL values.
+            decoded = json.dumps(data, ensure_ascii=False)
+        if image_url.search(unescape(decoded)):
+            raise ValueError(f'{file}: forbidden original image URL')
+
+
 def project_to_public_dto(internal_record: dict) -> dict:
     """Copy only explicitly approved fields; never infer missing facts."""
     offers = []
@@ -153,7 +195,7 @@ def _source_link(url):
 
 
 def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
-    """Build a fresh output directory from validated public data only."""
+    """Cleanly replace output with validated public data and scan all files."""
     dto = project_to_public_dto(internal_record)
     out = Path(out_dir).resolve()
     protected = (ROOT / 'website/dist').resolve()
@@ -163,7 +205,12 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     offers = dto['offers']
     if len(offers) != 1 or not re.fullmatch(r'[A-Za-z0-9_-]+', offers[0]['offer_id']):
         raise ValueError('S1 requires one offer with a safe filename identifier')
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=True)
+    for child in out.iterdir():
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
     (out / 'offers').mkdir()
     cards = []
     for offer in offers:
@@ -204,6 +251,7 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     (out / 'index.html').write_text(_page('套餐筛选 · 合成样例', body), encoding='utf-8')
     (out / 'data.json').write_text(json.dumps(dto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     shutil.copyfile(ROOT / 'website/dist/style.css', out / 'style.css')
+    scan_public_output(out)
 
 
 def main():
@@ -212,8 +260,13 @@ def main():
     build = sub.add_parser('build')
     build.add_argument('--input', required=True, type=Path)
     build.add_argument('--out', required=True, type=Path)
+    scan = sub.add_parser('scan')
+    scan.add_argument('--dir', required=True, type=Path)
     args = parser.parse_args()
-    build_public_site(json.loads(args.input.read_text(encoding='utf-8')), args.out)
+    if args.command == 'scan':
+        scan_public_output(args.dir)
+    else:
+        build_public_site(json.loads(args.input.read_text(encoding='utf-8')), args.out)
 
 
 if __name__ == '__main__':

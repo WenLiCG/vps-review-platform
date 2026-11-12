@@ -137,3 +137,121 @@ class PublicDTOPagesTests(unittest.TestCase):
                 for key in FORBIDDEN_KEYS:
                     self.assertIsNone(re.search(r'"' + re.escape(key) + r'"\s*:', source))
         self.assertTrue({'index.html', 'offers/FX-001.html', 'data.json', 'style.css'} <= scanned)
+
+
+class PublicDTONegativePagesTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.out = Path(temp.name) / 'site'
+
+    def test_leak_scan_fails_on_injected_evidence_field_and_original_image_url_then_passes_when_removed(self):
+        from vps_pipeline.public_dto import scan_public_output
+
+        build_public_site(load_internal(), self.out)
+        image_url = 'https://cdn.synthetic.example/original/fx001-hero.png'
+        for injection, relative in (
+            ('evidence', 'data.json'),
+            ('original_image_url', 'data.json'),
+            ('original_image_url', 'index.html'),
+        ):
+            path = self.out / relative
+            clean = path.read_text(encoding='utf-8')
+            if injection == 'evidence':
+                dto = json.loads(clean)
+                dto['offers'][0]['evidence'] = {'quote': '2核'}
+                contaminated = json.dumps(dto, ensure_ascii=False)
+                reason = r'(?i)evidence'
+            elif relative.endswith('.json'):
+                dto = json.loads(clean)
+                # Inject content in an allowed field: scanning must inspect values.
+                dto['offers'][0]['summary_text'] += ' ' + image_url
+                contaminated = json.dumps(dto, ensure_ascii=False)
+                reason = r'(?i)(image|url|原图|图片|fx001-hero)'
+            else:
+                contaminated = clean + '<img src="' + image_url + '">'
+                reason = r'(?i)(image|url|原图|图片|fx001-hero)'
+            for scope in ('directory', 'file'):
+                target = self.out if scope == 'directory' else path
+                with self.subTest(injection=injection, file=relative, scope=scope, state='injected'):
+                    path.write_text(contaminated, encoding='utf-8')
+                    try:
+                        with self.assertRaisesRegex(ValueError, r'\S', msg=f'{injection} in {relative} must fail scan') as caught:
+                            scan_public_output(target)
+                        self.assertIn(relative, str(caught.exception), 'scan error must identify leaking file')
+                        self.assertRegex(str(caught.exception), reason, 'scan error must explain leak reason')
+                    finally:
+                        path.write_text(clean, encoding='utf-8')
+                with self.subTest(injection=injection, file=relative, scope=scope, state='removed'):
+                    self.assertIsNone(scan_public_output(target), 'removing injection must restore clean output')
+
+    def test_build_calls_production_leak_scan_on_completed_output(self):
+        from unittest.mock import patch
+        from vps_pipeline import public_dto
+
+        def reject_completed_output(path):
+            self.assertEqual(Path(path).resolve(), self.out.resolve())
+            for relative in ('data.json', 'index.html', 'offers/FX-001.html', 'style.css'):
+                self.assertTrue((Path(path) / relative).is_file(), relative + ' must exist before scan')
+            raise ValueError('synthetic build gate rejection')
+
+        with patch.object(public_dto, 'scan_public_output', side_effect=reject_completed_output) as scan:
+            with self.assertRaisesRegex(ValueError, 'synthetic build gate rejection',
+                                        msg='build must propagate production scan rejection'):
+                public_dto.build_public_site(load_internal(), self.out)
+            scan.assert_called_once()
+
+    def test_leak_scan_cli_fails_on_injected_evidence_then_passes_on_clean_output(self):
+        build_public_site(load_internal(), self.out)
+        path = self.out / 'data.json'
+        clean = path.read_text(encoding='utf-8')
+        dto = json.loads(clean)
+        dto['evidence'] = {'quote': '2核'}
+        path.write_text(json.dumps(dto, ensure_ascii=False), encoding='utf-8')
+        command = [sys.executable, '-B', '-m', 'vps_pipeline.public_dto', 'scan', '--dir', str(self.out)]
+        try:
+            with self.subTest(state='injected'):
+                result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
+                self.assertNotEqual(result.returncode, 0, 'CLI scan must reject evidence')
+                self.assertIn('data.json', result.stdout + result.stderr, 'CLI scan must identify leaking file')
+                self.assertIn('evidence', (result.stdout + result.stderr).lower(), 'CLI scan must explain evidence leak')
+        finally:
+            path.write_text(clean, encoding='utf-8')
+        with self.subTest(state='removed'):
+            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, 'clean CLI scan must succeed: ' + result.stdout + result.stderr)
+
+    def assert_matches_fresh_build(self):
+        fresh = self.out.parent / 'fresh'
+        build_public_site(load_internal(), fresh)
+        actual_files = {p.relative_to(self.out) for p in self.out.rglob('*') if p.is_file()}
+        fresh_files = {p.relative_to(fresh) for p in fresh.rglob('*') if p.is_file()}
+        self.assertEqual(actual_files, fresh_files, 'rebuild file set must match fresh build without stale files')
+        for relative in sorted(fresh_files):
+            with self.subTest(file=str(relative)):
+                actual, expected = self.out / relative, fresh / relative
+                if relative.suffix == '.css':
+                    self.assertEqual(actual.read_bytes(), expected.read_bytes(), 'CSS bytes must match fresh build')
+                else:
+                    self.assertEqual(actual.read_text(encoding='utf-8'), expected.read_text(encoding='utf-8'),
+                                     'text content must match fresh build')
+
+    def add_stale_output(self):
+        for relative in ('stale.txt', 'stale.html', 'offers/OLD.html'):
+            (self.out / relative).write_text('synthetic stale output', encoding='utf-8')
+
+    def test_build_twice_into_same_directory_succeeds_and_matches_fresh_build(self):
+        build_public_site(load_internal(), self.out)
+        self.add_stale_output()
+        build_public_site(load_internal(), self.out)
+        self.assert_matches_fresh_build()
+
+    def test_cli_build_twice_into_same_directory_succeeds_and_matches_fresh_build(self):
+        command = [sys.executable, '-B', '-m', 'vps_pipeline.public_dto', 'build',
+                   '--input', str(FIXTURE), '--out', str(self.out)]
+        first = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        self.add_stale_output()
+        second = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
+        self.assertEqual(second.returncode, 0, 'second CLI build must succeed: ' + second.stdout + second.stderr)
+        self.assert_matches_fresh_build()
