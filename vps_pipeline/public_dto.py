@@ -91,7 +91,7 @@ def validate_public_dto(obj: dict) -> None:
 
 
 def scan_public_output(path: str | Path) -> None:
-    """Reject evidence keys and HTTPS image URLs in UTF-8 public text files.
+    """Validate data.json and reject evidence keys and HTTPS image URLs.
 
     This targeted leak check complements the DTO whitelist; it is not a
     general guarantee that arbitrary public prose contains no private data.
@@ -121,11 +121,18 @@ def scan_public_output(path: str | Path) -> None:
         try:
             data = json.loads(source, object_pairs_hook=inspect_pairs)
         except json.JSONDecodeError:
+            if file.name == 'data.json':
+                raise ValueError(f'{file}: invalid public DTO JSON')
             # Also cover JSON fragments embedded in HTML or other text.
             if re.search(r'"evidence"\s*:', unescape(source)):
                 raise ValueError(f'{file}: forbidden evidence key')
             decoded = source
         else:
+            if file.name == 'data.json':
+                try:
+                    validate_public_dto(data)
+                except ValueError as exc:
+                    raise ValueError(f'{file}: {exc}') from exc
             # Decode JSON string escapes before inspecting URL values.
             decoded = json.dumps(data, ensure_ascii=False)
         if image_url.search(unescape(decoded)):
@@ -197,7 +204,12 @@ def _source_link(url):
 def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     """Cleanly replace output with validated public data and scan all files."""
     dto = project_to_public_dto(internal_record)
-    out = Path(out_dir).resolve()
+    out = Path(out_dir)
+    # Inspect the original path before resolve() can hide symbolic links.
+    for component in (out, *out.parents):
+        if component.is_symlink():
+            raise ValueError('output path must not contain a symlink')
+    out = out.resolve()
     protected = (ROOT / 'website/dist').resolve()
     if out == protected or protected in out.parents or out in protected.parents:
         raise ValueError('output must not overwrite website/dist')
@@ -205,6 +217,9 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     offers = dto['offers']
     if len(offers) != 1 or not re.fullmatch(r'[A-Za-z0-9_-]+', offers[0]['offer_id']):
         raise ValueError('S1 requires one offer with a safe filename identifier')
+    if out.exists() and any(out.iterdir()) and not (out / '.public-dto-build').is_file():
+        raise ValueError('output directory is not a public-dto build output; '
+                         'refusing to delete existing files')
     out.mkdir(parents=True, exist_ok=True)
     for child in out.iterdir():
         if child.is_dir() and not child.is_symlink():
@@ -251,6 +266,7 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     (out / 'index.html').write_text(_page('套餐筛选 · 合成样例', body), encoding='utf-8')
     (out / 'data.json').write_text(json.dumps(dto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     shutil.copyfile(ROOT / 'website/dist/style.css', out / 'style.css')
+    (out / '.public-dto-build').write_text('public-dto/v1 build output\n', encoding='utf-8')
     scan_public_output(out)
 
 

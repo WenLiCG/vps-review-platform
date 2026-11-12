@@ -255,3 +255,192 @@ class PublicDTONegativePagesTests(unittest.TestCase):
         second = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
         self.assertEqual(second.returncode, 0, 'second CLI build must succeed: ' + second.stdout + second.stderr)
         self.assert_matches_fresh_build()
+
+    # S1-SAFE PHASE 1: append-only contracts; production behavior is unchanged.
+    def prepare_precious_files(self, out):
+        contents = {'precious.txt': b'precious S1 SAFE unique bytes\n',
+                    'keep/notes.txt': '不可删除的 S1 SAFE 笔记\n'.encode('utf-8')}
+        for relative, content in contents.items():
+            path = out / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+        return contents
+
+    def assert_precious_files_unchanged(self, out, contents):
+        for relative, content in contents.items():
+            with self.subTest(preserved=relative):
+                self.assertTrue((out / relative).is_file(), relative + ' must survive refusal')
+                self.assertEqual((out / relative).read_bytes(), content,
+                                 relative + ' contents must remain unchanged')
+
+    def run_safe_cli(self, action, out):
+        command = [sys.executable, '-B', '-m', 'vps_pipeline.public_dto', action]
+        command += (['--input', str(FIXTURE), '--out', str(out)] if action == 'build'
+                    else ['--dir', str(out)])
+        return subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=30)
+
+    def test_build_refuses_nonempty_directory_without_marker_and_leaves_existing_files(self):
+        contents = self.prepare_precious_files(self.out)
+        self.assertFalse((self.out / '.public-dto-build').exists())
+        with self.subTest(check='refusal'):
+            with self.assertRaisesRegex(ValueError, r'(?i)(output|directory|目录).*(refus|not|拒绝|不是)',
+                                        msg='unmarked nonempty output must be refused before deletion'):
+                build_public_site(load_internal(), self.out)
+        self.assert_precious_files_unchanged(self.out, contents)
+        self.assertFalse((self.out / 'index.html').exists(), 'refusal must not write a site')
+
+    def test_cli_build_refuses_nonempty_directory_without_marker(self):
+        contents = self.prepare_precious_files(self.out)
+        result = self.run_safe_cli('build', self.out)
+        with self.subTest(check='exit_status'):
+            self.assertNotEqual(result.returncode, 0, 'CLI build must reject unmarked nonempty output')
+        self.assert_precious_files_unchanged(self.out, contents)
+
+    def test_build_rebuilds_when_marker_present(self):
+        from vps_pipeline.public_dto import scan_public_output
+
+        build_public_site(load_internal(), self.out)
+        marker = self.out / '.public-dto-build'
+        with self.subTest(check='successful_build_marker'):
+            self.assertTrue(marker.is_file(), 'successful build must write .public-dto-build')
+            marker_content = marker.read_text(encoding='utf-8')
+            self.assertTrue(marker_content.strip(), 'build marker must contain a nonempty public identifier')
+            for canary in CANARIES:
+                self.assertNotIn(canary, marker_content)
+            for key in FORBIDDEN_KEYS:
+                self.assertNotIn(key, marker_content)
+            self.assertIsNone(scan_public_output(self.out), 'scan must allow the build marker')
+            self.assertIsNone(scan_public_output(marker), 'scan must allow the marker file itself')
+        self.add_stale_output()
+        build_public_site(load_internal(), self.out)
+        for relative in ('stale.txt', 'stale.html', 'offers/OLD.html'):
+            self.assertFalse((self.out / relative).exists(), 'marked rebuild must remove ' + relative)
+        self.assert_matches_fresh_build()
+        with self.subTest(check='rebuilt_marker'):
+            self.assertTrue(marker.is_file(), 'rebuild must preserve a build marker')
+            self.assertEqual(marker.read_bytes(), (self.out.parent / 'fresh/.public-dto-build').read_bytes(),
+                             'rebuilt and fresh marker contents must match')
+
+    def test_build_refuses_symlink_out_and_path_containing_symlink(self):
+        for case in ('out_is_symlink', 'path_contains_symlink'):
+            with self.subTest(case=case):
+                base = self.out.parent / case
+                target = base / 'target'
+                actual_out = target if case == 'out_is_symlink' else target / 'subdir'
+                contents = self.prepare_precious_files(actual_out)
+                link = base / 'link'
+                link.symlink_to(target, target_is_directory=True)
+                out = link if case == 'out_is_symlink' else link / 'subdir'
+                with self.subTest(check='refusal'):
+                    with self.assertRaisesRegex(ValueError, r'(?i)(symlink|symbolic|符号链接)',
+                                                msg='symlink output paths must be refused'):
+                        build_public_site(load_internal(), out)
+                self.assertTrue(link.is_symlink(), 'refusal must preserve the symlink')
+                self.assert_precious_files_unchanged(actual_out, contents)
+
+    def assert_protected_output_refused_without_mutation(self, out):
+        from contextlib import ExitStack
+        from unittest.mock import patch
+
+        # Tripwires raise AssertionError, never ValueError: attempting mutation
+        # must fail this test, while keeping real repository/dist files safe.
+        with ExitStack() as guards:
+            for name in ('mkdir', 'unlink', 'rmdir', 'write_text', 'write_bytes', 'touch',
+                         'rename', 'replace', 'symlink_to'):
+                guards.enter_context(patch.object(Path, name, side_effect=AssertionError(
+                    'unsafe output reached filesystem mutation before refusal: ' + name)))
+            for name in ('rmtree', 'copyfile'):
+                guards.enter_context(patch('vps_pipeline.public_dto.shutil.' + name,
+                    side_effect=AssertionError('unsafe output reached filesystem mutation before refusal: ' + name)))
+            with self.assertRaisesRegex(ValueError, r'\S', msg='protected output must be refused before mutation'):
+                build_public_site(load_internal(), out)
+
+    def test_build_refuses_repo_root_and_ancestor(self):
+        key = ROOT / 'vps_pipeline/public_dto.py'
+        before = key.read_bytes()
+        for case, out in (('repo_root', ROOT), ('ancestor', ROOT.parent)):
+            with self.subTest(case=case):
+                try:
+                    self.assert_protected_output_refused_without_mutation(out)
+                finally:
+                    self.assertTrue(key.is_file(), 'repository production module must survive refusal')
+                    self.assertEqual(key.read_bytes(), before)
+
+    def test_build_refuses_out_inside_website_dist(self):
+        dist = ROOT / 'website/dist'
+        before = {path.relative_to(dist): path.read_bytes()
+                  for path in dist.rglob('*') if path.is_file()}
+        child = dist / '__s1_safe_refusal_must_not_create__'
+        self.assertFalse(child.exists(), 'dist refusal test requires a nonexistent child path')
+        for case, out in (('dist', dist), ('dist_child', child)):
+            with self.subTest(case=case):
+                try:
+                    self.assert_protected_output_refused_without_mutation(out)
+                finally:
+                    after = {path.relative_to(dist): path.read_bytes()
+                             for path in dist.rglob('*') if path.is_file()}
+                    self.assertEqual(after, before, 'all existing dist files must remain byte-identical')
+                    self.assertFalse(child.exists(), 'refusal must not create a directory inside dist')
+
+    def test_cli_build_refusal_exit_nonzero_for_unsafe_out(self):
+        for case in ('unmarked_nonempty', 'symlink'):
+            with self.subTest(case=case):
+                target = self.out.parent / case / 'target'
+                contents = self.prepare_precious_files(target)
+                out = target
+                if case == 'symlink':
+                    out = target.parent / 'link'
+                    out.symlink_to(target, target_is_directory=True)
+                result = self.run_safe_cli('build', out)
+                with self.subTest(check='exit_status'):
+                    self.assertNotEqual(result.returncode, 0, 'CLI build must refuse unsafe output: ' + case)
+                self.assert_precious_files_unchanged(target, contents)
+
+    def safe_scan_injections(self, clean):
+        for injection in ('evidence', 'image_url_value', 'unexpected_extra'):
+            dto = json.loads(clean)
+            offer = dto['offers'][0]
+            if injection == 'evidence':
+                offer['evidence'] = {'quote': '2核'}
+            elif injection == 'image_url_value':
+                offer['summary_text'] += ' https://cdn.synthetic.example/original/fx001-hero.png'
+            else:
+                offer['unexpected_extra'] = 'nope'
+            yield injection, json.dumps(dto, ensure_ascii=False)
+
+    def test_scan_rejects_injected_evidence_image_url_value_and_unknown_field_then_passes_when_removed(self):
+        from vps_pipeline.public_dto import scan_public_output
+
+        build_public_site(load_internal(), self.out)
+        path = self.out / 'data.json'
+        clean = path.read_text(encoding='utf-8')
+        self.assertIsNone(scan_public_output(self.out))
+        for injection, contaminated in self.safe_scan_injections(clean):
+            for scope, target in (('directory', self.out), ('file', path)):
+                with self.subTest(injection=injection, scope=scope, state='injected'):
+                    path.write_text(contaminated, encoding='utf-8')
+                    try:
+                        with self.assertRaisesRegex(ValueError, r'\S',
+                                msg=injection + ' injection must fail direct scan'):
+                            scan_public_output(target)
+                    finally:
+                        path.write_text(clean, encoding='utf-8')
+                with self.subTest(injection=injection, scope=scope, state='removed'):
+                    self.assertIsNone(scan_public_output(target), injection + ' removal must restore clean scan')
+
+    def test_cli_scan_exit_nonzero_for_each_injection_and_zero_after_removal(self):
+        build_public_site(load_internal(), self.out)
+        path = self.out / 'data.json'
+        clean = path.read_text(encoding='utf-8')
+        for injection, contaminated in self.safe_scan_injections(clean):
+            with self.subTest(injection=injection, state='injected'):
+                path.write_text(contaminated, encoding='utf-8')
+                try:
+                    result = self.run_safe_cli('scan', self.out)
+                    self.assertNotEqual(result.returncode, 0, injection + ' injection must fail CLI scan')
+                finally:
+                    path.write_text(clean, encoding='utf-8')
+            with self.subTest(injection=injection, state='removed'):
+                result = self.run_safe_cli('scan', self.out)
+                self.assertEqual(result.returncode, 0,
+                                 injection + ' removal must restore clean CLI scan: ' + result.stdout + result.stderr)
