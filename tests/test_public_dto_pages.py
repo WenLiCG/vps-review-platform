@@ -238,6 +238,103 @@ class PublicDTONegativePagesTests(unittest.TestCase):
         self.assertEqual(set(self.out.parent.iterdir()), siblings_before,
                          'failed build must leave no temporary or backup entries in out.parent')
 
+    def test_build_second_rename_failure_restores_old_output(self):
+        from unittest.mock import patch
+
+        build_public_site(load_internal(), self.out)
+        (self.out / 'old-site-sentinel.bin').write_bytes(b'D6 old site only\x00\xff\n')
+        self.out.chmod(0o750)
+        mode_before = self.out.stat().st_mode & 0o777
+        files_before = self.output_file_snapshot()
+        self.assertIn('.public-dto-build', files_before)
+        siblings_before = set(self.out.parent.iterdir())
+        real_rename = os.rename
+        failure = OSError('synthetic replace failure')
+        failed_once = False
+
+        def fail_build_publish_once(src, dst, *args, **kwargs):
+            nonlocal failed_once
+            source = Path(src)
+            if (not failed_once and Path(dst) == self.out
+                    and source.parent == self.out.parent
+                    and source.name.startswith(f'.{self.out.name}-build-')):
+                failed_once = True
+                raise failure
+            return real_rename(src, dst, *args, **kwargs)
+
+        with patch('vps_pipeline.public_dto.os.rename', side_effect=fail_build_publish_once):
+            with self.assertRaisesRegex(OSError, 'synthetic replace failure') as caught:
+                build_public_site(load_internal(), self.out)
+        self.assertTrue(failed_once, 'must exercise the second rename failure')
+        self.assertIs(caught.exception, failure, 'must propagate the original OSError')
+        self.assertTrue(self.out.is_dir())
+        self.assertEqual(self.out.stat().st_mode & 0o777, mode_before)
+        self.assertEqual(self.output_file_snapshot(), files_before)
+        self.assert_failed_build_preserves_parent(siblings_before)
+
+    def assert_backup_delete_failure_is_success(self, cli=False):
+        from contextlib import redirect_stderr, redirect_stdout
+        from io import StringIO
+        from unittest.mock import patch
+        from vps_pipeline import public_dto
+
+        build_public_site(load_internal(), self.out)
+        sentinel = 'old-site-sentinel.bin'
+        (self.out / sentinel).write_bytes(b'backup delete old site only\x00\xff\n')
+        old_files = self.output_file_snapshot()
+        real_rmtree = public_dto.shutil.rmtree
+        attempted_backups = []
+
+        def fail_backup_delete(path, *args, **kwargs):
+            candidate = Path(path).resolve()
+            if (candidate.parent == self.out.parent.resolve()
+                    and candidate.name.startswith(f'.{self.out.name}-backup-')):
+                attempted_backups.append(candidate)
+                raise OSError('synthetic backup delete failure')
+            return real_rmtree(path, *args, **kwargs)
+
+        stderr, stdout = StringIO(), StringIO()
+        with patch('vps_pipeline.public_dto.shutil.rmtree', side_effect=fail_backup_delete), \
+                redirect_stderr(stderr), redirect_stdout(stdout):
+            if cli:
+                input_path = self.out.parent / 'clean-input.json'
+                input_path.write_text(json.dumps(load_internal()), encoding='utf-8')
+                argv = ['public_dto', 'build', '--input', str(input_path), '--out', str(self.out)]
+                with patch.object(sys, 'argv', argv):
+                    try:
+                        result = public_dto.main()
+                    except SystemExit as exited:
+                        self.assertIn(exited.code, (None, 0), 'published CLI build must exit successfully')
+                    else:
+                        self.assertIn(result, (None, 0))
+            else:
+                self.assertIsNone(build_public_site(load_internal(), self.out))
+
+        self.assertTrue(attempted_backups, 'must attempt to delete the old backup')
+        self.assertTrue(self.out.is_dir())
+        self.assertFalse((self.out / sentinel).exists(), 'new site must replace the old site')
+        self.assertEqual(self.output_file_snapshot(),
+                         {name: data for name, data in old_files.items() if name != sentinel})
+        for relative in ('index.html', 'data.json', '.public-dto-build'):
+            self.assertTrue((self.out / relative).is_file(), relative)
+        backups = list(self.out.parent.glob(f'.{self.out.name}-backup-*'))
+        self.assertEqual(len(backups), 1, 'failed cleanup must leave the old backup observable')
+        backup = backups[0]
+        self.assertTrue(backup.is_dir())
+        self.assertEqual({p.relative_to(backup).as_posix(): p.read_bytes()
+                          for p in backup.rglob('*') if p.is_file()}, old_files)
+        self.assertIn(backup.resolve(), attempted_backups)
+        self.assertRegex(stderr.getvalue(), r'(?i)(warn|warning|警告)')
+        self.assertIn(str(backup.resolve()), stderr.getvalue())
+        self.assertNotRegex(stdout.getvalue(), r'(?i)(warn|warning|警告)')
+        self.assertEqual(list(self.out.parent.glob(f'.{self.out.name}-build-*')), [])
+
+    def test_build_backup_delete_failure_warns_and_returns_success(self):
+        self.assert_backup_delete_failure_is_success()
+
+    def test_cli_build_backup_delete_failure_warns_and_exits_zero(self):
+        self.assert_backup_delete_failure_is_success(cli=True)
+
     def run_contaminated_build_cli(self, input_path):
         return subprocess.run(
             [sys.executable, '-B', '-m', 'vps_pipeline.public_dto', 'build',
