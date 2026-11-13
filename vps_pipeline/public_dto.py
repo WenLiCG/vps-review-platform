@@ -251,10 +251,28 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     if out.exists() and any(out.iterdir()) and marker_mode is None:
         raise ValueError('output directory is not a public-dto build output; '
                          'refusing to delete existing files')
-    out.parent.mkdir(parents=True, exist_ok=True)
     target = out
-    out = Path(tempfile.mkdtemp(dir=target.parent, prefix=f'.{target.name}-build-'))
+    out = None
+    created_parents = []
+    published = False
     try:
+        missing_parents = []
+        parent = target.parent
+        while not parent.exists():
+            missing_parents.append(parent)
+            parent = parent.parent
+        for parent in reversed(missing_parents):
+            try:
+                parent.mkdir()
+            except FileExistsError:
+                if not parent.is_dir():
+                    raise
+            else:
+                created_parents.append(parent)
+        out = Path(tempfile.mkdtemp(dir=target.parent, prefix=f'.{target.name}-build-'))
+        current_umask = os.umask(0)
+        os.umask(current_umask)
+        out.chmod(0o777 & ~current_umask)
         (out / 'offers').mkdir()
         cards = []
         for offer in offers:
@@ -304,15 +322,23 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
             os.rename(target, backup)
             try:
                 os.rename(out, target)
+                published = True
             except BaseException:
                 os.rename(backup, target)
                 raise
             shutil.rmtree(backup)
         else:
             os.rename(out, target)
+            published = True
     finally:
-        if out.exists():
+        if out is not None and out.exists():
             shutil.rmtree(out)
+        if not published:
+            for parent in reversed(created_parents):
+                try:
+                    parent.rmdir()
+                except OSError:
+                    break
 
 
 def main():

@@ -5,6 +5,7 @@ n-gram/子串扫描会有误报漏报，不能当作完整证明。
 import html
 from html.parser import HTMLParser
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -61,6 +62,18 @@ class PublicDTOPagesTests(unittest.TestCase):
 
     def build(self, internal=None):
         build_public_site(load_internal() if internal is None else internal, self.out)
+
+    def test_new_output_directory_permissions_respect_umask(self):
+        known_umask = 0o022
+        self.assertFalse(self.out.exists())
+        previous_umask = os.umask(known_umask)
+        try:
+            self.build()
+            self.assertEqual(self.out.stat().st_mode & 0o777,
+                             0o777 & ~known_umask,
+                             'published output must use normal mkdir permissions')
+        finally:
+            os.umask(previous_umask)
 
     def test_list_prerenders_offer_and_detail_link_with_filter_shell(self):
         self.build()
@@ -243,6 +256,27 @@ class PublicDTONegativePagesTests(unittest.TestCase):
             self.assertFalse(self.out.exists(), 'rejected image URL must not create --out')
         with self.subTest(check='no_temporary_or_backup_residue'):
             self.assert_failed_build_preserves_parent(siblings_before)
+
+    def test_build_image_url_rejection_removes_new_parent_directories(self):
+        root = self.out.parent
+        out = root / 'a' / 'b' / 'site'
+        internal = load_internal()
+        internal['summary']['text'] = 'https://cdn.synthetic.example/original/fx001-hero.png'
+        self.assertTrue(root.is_dir())
+        self.assertFalse((root / 'a').exists())
+        self.assertFalse((root / 'a' / 'b').exists())
+        children_before = set(root.iterdir())
+
+        with self.assertRaisesRegex(ValueError, r'(?i)(forbidden|image|url|原图|图片)'):
+            build_public_site(internal, out)
+
+        with self.subTest(check='new_parents_removed'):
+            self.assertFalse((root / 'a').exists(),
+                             'scan rejection must remove parents created by this build')
+        with self.subTest(check='existing_root_preserved_without_residue'):
+            self.assertTrue(root.is_dir(), 'existing temporary root must survive rejection')
+            self.assertEqual(set(root.iterdir()), children_before,
+                             'scan rejection must leave no new entries in existing root')
 
     def test_cli_build_image_url_rejection_leaves_new_output_absent(self):
         internal = load_internal()
