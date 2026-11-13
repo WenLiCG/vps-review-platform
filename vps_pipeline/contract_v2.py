@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 _KEEP_BOTH_PRICE_FIELDS = (
     'price.amount', 'price.currency', 'price.billing_period_months',
-    'price.term_role', 'price.monthly_equivalent', 'price.price_status',
+    'price.term_role', 'price.monthly_equivalent',
 )
 KEEP_BOTH_PUBLIC_FIELDS = {
     'memory': ('memory_mb',),
@@ -34,12 +34,11 @@ KEEP_BOTH_PUBLIC_FIELDS = {
     'traffic_value': ('traffic_value', 'traffic_unit'),
     'traffic_unit': ('traffic_unit',),
     'price': _KEEP_BOTH_PRICE_FIELDS,
-    'amount': _KEEP_BOTH_PRICE_FIELDS,
-    'currency': _KEEP_BOTH_PRICE_FIELDS,
-    'billing_period_months': _KEEP_BOTH_PRICE_FIELDS,
-    'term_role': _KEEP_BOTH_PRICE_FIELDS,
-    'monthly_equivalent': _KEEP_BOTH_PRICE_FIELDS,
-    'price_status': _KEEP_BOTH_PRICE_FIELDS,
+    'amount': ('price.amount', 'price.monthly_equivalent'),
+    'currency': ('price.currency',),
+    'billing_period_months': ('price.billing_period_months', 'price.monthly_equivalent'),
+    'term_role': ('price.term_role',),
+    'monthly_equivalent': ('price.monthly_equivalent',),
 }
 KEEP_BOTH_FIELD_LABELS = {
     'memory_mb': '内存', 'disk_total_value': '磁盘',
@@ -240,6 +239,9 @@ def project_review_document_to_public_dto(doc) -> dict:
                     for part in parts[:-1]:
                         target = target[part]
                     target[parts[-1]] = None
+                if any(path.startswith('price.')
+                       for path in KEEP_BOTH_PUBLIC_FIELDS[conflict['field']]):
+                    price['price_status'] = 'unresolved_conflict'
         offers.append(offer)
     dto = {'schema_version': PUBLIC_DTO_V2_VERSION, 'offers': offers}
     validate_public_dto_compatible(dto)

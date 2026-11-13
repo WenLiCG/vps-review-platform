@@ -31,9 +31,20 @@ ValueError，禁止静默忽略。公开候选仅包含 source、raw、normalize
 | `vcpu` | `vcpu` | vCPU |
 | `traffic`, `traffic_value` | `traffic_value`, `traffic_unit` | 流量 |
 | `traffic_unit` | `traffic_unit` | 流量单位 |
-| `price`, `amount`, `currency`, `billing_period_months`, `term_role`, `monthly_equivalent`, `price_status` | `price.amount`, `price.currency`, `price.billing_period_months`, `price.term_role`, `price.monthly_equivalent`, `price.price_status` | 价格 |
+| `price` | `price.amount`, `price.currency`, `price.billing_period_months`, `price.term_role`, `price.monthly_equivalent` | 价格 |
+| `amount` | `price.amount`, `price.monthly_equivalent` | 价格 |
+| `currency` | `price.currency` | 价格 |
+| `billing_period_months` | `price.billing_period_months`, `price.monthly_equivalent` | 价格 |
+| `term_role` | `price.term_role` | 价格 |
+| `monthly_equivalent` | `price.monthly_equivalent` | 价格 |
+
+价格 keep_both 只清空表中对应的冲突值及派生月均，未冲突的币种、周期和角色保持原值。
+`price.price_status` 永不置为 null；价格字段存在 keep_both 未解决冲突时，
+其值为 `unresolved_conflict`，不是 `unknown` 或 `partial`。
 
 ## D2 日期
+
+D2 取代离线规格（`DATA_CONTRACT.md` 第 72、74 行及 FX-008A、FX-008B、FX-011）中「只有日期时换成北京时间零点并标 `inferred_weak`」的规则；该规则作废。
 
 仅日期输入保留 YYYY-MM-DD 和 day 精度，review_date_tz 与 tz_confidence 为
 unknown，tested_at_beijing 为 null，不猜北京零点。仍参与按日的闭区间筛选，
@@ -47,7 +58,7 @@ unknown，tested_at_beijing 为 null，不猜北京零点。仍参与按日的�
 未知币种或周期不进入价格区间。不使用汇率，也不跨币种换算比较。
 年付保留原金额、12 月周期与月均，不能当作裸月价。
 term_role 为 first_term、renewal 或 unknown；月均函数不改变角色，长期榜单应
-选择 renewal，不用首期优惠冒充长期价格。price_status 为 known、unknown、partial。
+选择 renewal，不用首期优惠冒充长期价格。price_status 为 known、unknown、partial、unresolved_conflict。
 稳定标签至少需要五个独立样本，按 run_id 去重；当前未冻结稳定性数值判据，
 因此不凭样本数自动声明稳定，也不制造聚合数值。
 

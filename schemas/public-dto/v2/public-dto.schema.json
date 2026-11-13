@@ -202,7 +202,8 @@
                 "enum": [
                   "known",
                   "unknown",
-                  "partial"
+                  "partial",
+                  "unresolved_conflict"
                 ]
               }
             },
