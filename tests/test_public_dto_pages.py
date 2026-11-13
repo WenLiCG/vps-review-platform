@@ -444,3 +444,108 @@ class PublicDTONegativePagesTests(unittest.TestCase):
                 result = self.run_safe_cli('scan', self.out)
                 self.assertEqual(result.returncode, 0,
                                  injection + ' removal must restore clean CLI scan: ' + result.stdout + result.stderr)
+
+    def test_scan_rejects_nul_and_invalid_utf8_even_without_sensitive_keys(self):
+        from vps_pipeline.public_dto import scan_public_output
+
+        build_public_site(load_internal(), self.out)
+        path = self.out / 'data.json'
+        clean = path.read_bytes()
+        dto = json.loads(clean)
+        dto['offers'][0]['evidence'] = {'quote': 'synthetic evidence'}
+        evidence = json.dumps(dto, ensure_ascii=False).encode('utf-8')
+        for case, contaminated in (
+            ('evidence_with_nul', evidence + b'\x00'),
+            ('evidence_with_invalid_utf8', evidence + b'\xff'),
+            ('pure_invalid_utf8', b'\xff'),
+            ('clean_json_with_invalid_utf8', clean + b'\xff'),
+            ('clean_json_with_nul', clean + b'\x00'),
+        ):
+            for scope, target in (('directory', self.out), ('file', path)):
+                with self.subTest(case=case, scope=scope):
+                    path.write_bytes(contaminated)
+                    try:
+                        with self.assertRaises(ValueError):
+                            scan_public_output(target)
+                    finally:
+                        path.write_bytes(clean)
+        self.assertIsNone(scan_public_output(self.out))
+
+    def test_cli_scan_rejects_evidence_with_nul(self):
+        build_public_site(load_internal(), self.out)
+        path = self.out / 'data.json'
+        dto = json.loads(path.read_bytes())
+        dto['offers'][0]['evidence'] = {'quote': 'synthetic evidence'}
+        path.write_bytes(json.dumps(dto, ensure_ascii=False).encode('utf-8') + b'\x00')
+        result = self.run_safe_cli('scan', self.out)
+        self.assertNotEqual(result.returncode, 0, 'NUL must not hide evidence from CLI scan')
+
+    def test_build_refuses_nonregular_marker_without_deleting_existing_files(self):
+        for kind in ('symlink', 'directory'):
+            with self.subTest(marker=kind):
+                out = self.out.parent / kind
+                contents = self.prepare_precious_files(out)
+                marker = out / '.public-dto-build'
+                target = self.out.parent / (kind + '-external-marker')
+                target_bytes = b'public-dto/v1 build output\n'
+                target.write_bytes(target_bytes)
+                if kind == 'symlink':
+                    marker.symlink_to(target)
+                else:
+                    marker.mkdir()
+                with self.subTest(check='refusal'):
+                    with self.assertRaises(ValueError):
+                        build_public_site(load_internal(), out)
+                self.assert_precious_files_unchanged(out, contents)
+                with self.subTest(check='marker_preserved'):
+                    if kind == 'symlink':
+                        self.assertTrue(marker.is_symlink())
+                        self.assertEqual(marker.readlink(), target)
+                    else:
+                        self.assertTrue(marker.is_dir())
+                self.assertEqual(target.read_bytes(), target_bytes)
+                for relative in ('index.html', 'data.json'):
+                    with self.subTest(site_file=relative):
+                        self.assertFalse((out / relative).exists())
+
+    def test_cli_build_refuses_symlink_marker_and_preserves_user_files(self):
+        contents = self.prepare_precious_files(self.out)
+        target = self.out.parent / 'external-marker'
+        target_bytes = b'public-dto/v1 build output\n'
+        target.write_bytes(target_bytes)
+        marker = self.out / '.public-dto-build'
+        marker.symlink_to(target)
+        result = self.run_safe_cli('build', self.out)
+        with self.subTest(check='exit_status'):
+            self.assertNotEqual(result.returncode, 0)
+        self.assert_precious_files_unchanged(self.out, contents)
+        with self.subTest(check='marker_preserved'):
+            self.assertTrue(marker.is_symlink())
+            self.assertEqual(marker.readlink(), target)
+        self.assertEqual(target.read_bytes(), target_bytes)
+        for relative in ('index.html', 'data.json'):
+            with self.subTest(site_file=relative):
+                self.assertFalse((self.out / relative).exists())
+
+    def test_build_refuses_regular_file_out_with_explicit_value_error(self):
+        content = b'precious regular file output\x00\xff\n'
+        self.out.write_bytes(content)
+        try:
+            with self.assertRaisesRegex(ValueError,
+                    r'(?i)(not a directory|regular file|普通文件|不是目录|拒绝)'):
+                build_public_site(load_internal(), self.out)
+        finally:
+            self.assertTrue(self.out.is_file())
+            self.assertEqual(self.out.read_bytes(), content)
+
+    def test_cli_build_refuses_regular_file_out_with_explicit_message(self):
+        content = b'precious regular file output\x00\xff\n'
+        self.out.write_bytes(content)
+        result = self.run_safe_cli('build', self.out)
+        self.assertTrue(self.out.is_file())
+        self.assertEqual(self.out.read_bytes(), content)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertRegex(result.stdout + result.stderr,
+                         r'(?i)(not a directory|regular file|普通文件|不是目录|拒绝)')
+        self.assertNotIn('NotADirectoryError', result.stdout + result.stderr,
+                         'CLI must expose an explicit refusal, not a filesystem traceback')

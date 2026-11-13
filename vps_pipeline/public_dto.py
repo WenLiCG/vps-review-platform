@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 import re
 import shutil
+import stat
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -105,12 +106,15 @@ def scan_public_output(path: str | Path) -> None:
     for file in files:
         if not file.is_file():
             continue
+        raw = file.read_bytes()
+        if re.search(rb'"evidence"\s*:', raw):
+            raise ValueError(f'{file}: forbidden evidence key')
+        if b'\x00' in raw:
+            raise ValueError(f'{file}: forbidden NUL byte')
         try:
-            source = file.read_text(encoding='utf-8-sig')
-        except UnicodeDecodeError:
-            continue
-        if '\x00' in source:
-            continue
+            source = raw.decode('utf-8-sig')
+        except UnicodeDecodeError as exc:
+            raise ValueError(f'{file}: invalid UTF-8') from exc
 
         def inspect_pairs(pairs):
             for key, value in pairs:
@@ -144,11 +148,27 @@ def project_to_public_dto(internal_record: dict) -> dict:
     offers = []
     for plan in internal_record.get('plans', []):
         plan_id = plan.get('plan_id')
-        price = next((p for p in internal_record.get('prices', [])
-                      if plan_id is not None and p.get('plan_id') == plan_id), {})
-        score = next((o.get('value') for o in internal_record.get('observations', [])
-                      if plan_id is not None and o.get('plan_id') == plan_id
-                      and o.get('metric') == 'geekbench6_single'), None)
+        prices = []
+        for item in internal_record.get('prices', []):
+            if plan_id is not None and item.get('plan_id') == plan_id:
+                public_price = {key: item.get(key) for key in PRICE['properties']}
+                if public_price not in prices:
+                    prices.append(public_price)
+        scores = []
+        for item in internal_record.get('observations', []):
+            if (plan_id is not None and item.get('plan_id') == plan_id
+                    and item.get('metric') == 'geekbench6_single'):
+                if item.get('value') not in scores:
+                    scores.append(item.get('value'))
+        price = prices[0] if len(prices) == 1 else {}
+        score = scores[0] if len(scores) == 1 else None
+        flags = internal_record.get('conflict_flags')
+        for field, values in (('price', prices), ('geekbench6_single', scores)):
+            if len(values) > 1:
+                flags = list(flags or [])
+                flag = f'{field}: {len(values)} values'
+                if flag not in flags:
+                    flags.append(flag)
         summary = internal_record.get('summary') or {}
         location = plan.get('location') or {}
         offer = {
@@ -159,7 +179,7 @@ def project_to_public_dto(internal_record: dict) -> dict:
             'location': {key: location.get(key) for key in LOCATION['properties']},
             'price': {key: price.get(key) for key in PRICE['properties']},
             'observations_summary': {'geekbench6_single': score},
-            'conflict_flags': internal_record.get('conflict_flags'),
+            'conflict_flags': flags,
             'summary_text': summary.get('text'),
             'limited_claim': summary.get('limited_claim'),
         }
@@ -217,7 +237,16 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     offers = dto['offers']
     if len(offers) != 1 or not re.fullmatch(r'[A-Za-z0-9_-]+', offers[0]['offer_id']):
         raise ValueError('S1 requires one offer with a safe filename identifier')
-    if out.exists() and any(out.iterdir()) and not (out / '.public-dto-build').is_file():
+    if out.exists() and not out.is_dir():
+        raise ValueError('output is not a directory; refusing to overwrite')
+    marker = out / '.public-dto-build'
+    try:
+        marker_mode = marker.lstat().st_mode
+    except FileNotFoundError:
+        marker_mode = None
+    if marker_mode is not None and not stat.S_ISREG(marker_mode):
+        raise ValueError('output build marker must be a regular file')
+    if out.exists() and any(out.iterdir()) and marker_mode is None:
         raise ValueError('output directory is not a public-dto build output; '
                          'refusing to delete existing files')
     out.mkdir(parents=True, exist_ok=True)

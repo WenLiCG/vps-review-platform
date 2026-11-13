@@ -144,6 +144,98 @@ class PublicDTOProjectionTests(unittest.TestCase):
         self.assertEqual(dto['offers'][0]['summary_text'], '人工撰写的另一条有限简评。')
 
 
+
+    def test_distinct_prices_and_scores_are_conflicts_and_preserve_input(self):
+        null_price = {'amount': None, 'currency': None, 'billing_period_months': None,
+                      'term_role': None, 'monthly_equivalent': None, 'price_status': None}
+        for price_conflict, score_conflict, existing in (
+            (True, False, []), (False, True, []), (True, True, []),
+            (True, False, ['pre-existing']),
+        ):
+            with self.subTest(price=price_conflict, score=score_conflict, existing=existing):
+                internal = copy.deepcopy(load_internal())
+                internal['conflict_flags'] = list(existing)
+                if price_conflict:
+                    price = copy.deepcopy(internal['prices'][0])
+                    price['amount'] = 99
+                    internal['prices'].append(price)
+                if score_conflict:
+                    score = copy.deepcopy(internal['observations'][0])
+                    score['value'] = 1
+                    internal['observations'].append(score)
+                before = copy.deepcopy(internal)
+                offer = project_to_public_dto(internal)['offers'][0]
+                self.assertEqual(internal, before, 'projection must not mutate input')
+                with self.subTest(check='price'):
+                    self.assertEqual(offer['price'], null_price if price_conflict
+                                     else expected_dto()['offers'][0]['price'])
+                with self.subTest(check='score'):
+                    self.assertEqual(offer['observations_summary']['geekbench6_single'],
+                                     None if score_conflict else 1420)
+                flags = list(existing)
+                if price_conflict:
+                    flags.append('price: 2 values')
+                if score_conflict:
+                    flags.append('geekbench6_single: 2 values')
+                with self.subTest(check='flags'):
+                    self.assertIsInstance(offer['conflict_flags'], list)
+                    self.assertCountEqual(offer['conflict_flags'], flags)
+
+    def test_identical_public_values_are_not_conflicts(self):
+        for kind in ('prices', 'observations', 'both'):
+            with self.subTest(duplicates=kind):
+                internal = copy.deepcopy(load_internal())
+                for collection in ('prices', 'observations'):
+                    if kind in (collection, 'both'):
+                        duplicate = copy.deepcopy(internal[collection][0])
+                        # Private metadata differences do not change public values.
+                        duplicate['evidence'] = {'quote': 'duplicate synthetic source'}
+                        internal[collection].append(duplicate)
+                before = copy.deepcopy(internal)
+                self.assertEqual(project_to_public_dto(internal), expected_dto())
+                self.assertEqual(internal, before)
+
+    def test_conflict_counts_distinct_values_rather_than_records(self):
+        internal = copy.deepcopy(load_internal())
+        for collection, field, value in (('prices', 'amount', 99),
+                                         ('observations', 'value', 1)):
+            changed = copy.deepcopy(internal[collection][0])
+            changed[field] = value
+            internal[collection].extend([changed, copy.deepcopy(changed),
+                                         copy.deepcopy(internal[collection][0])])
+        before = copy.deepcopy(internal)
+        offer = project_to_public_dto(internal)['offers'][0]
+        self.assertEqual(internal, before)
+        self.assertCountEqual(offer['conflict_flags'],
+                              ['price: 2 values', 'geekbench6_single: 2 values'])
+
+    def test_conflicts_are_scoped_to_plan_id(self):
+        internal = copy.deepcopy(load_internal())
+        other_plan = copy.deepcopy(internal['plans'][0])
+        other_plan['plan_id'] = 'synthetic-other-plan'
+        internal['plans'].append(other_plan)
+        for amount, score in ((20, 2000), (30, 3000)):
+            price = copy.deepcopy(internal['prices'][0])
+            price.update(plan_id='synthetic-other-plan', amount=amount)
+            internal['prices'].append(price)
+            observation = copy.deepcopy(internal['observations'][0])
+            observation.update(plan_id='synthetic-other-plan', value=score)
+            internal['observations'].append(observation)
+        before = copy.deepcopy(internal)
+        offers = project_to_public_dto(internal)['offers']
+        self.assertEqual(internal, before)
+        self.assertEqual(offers[0], expected_dto()['offers'][0])
+        with self.subTest(check='other_price'):
+            self.assertEqual(offers[1]['price'], {
+                'amount': None, 'currency': None, 'billing_period_months': None,
+                'term_role': None, 'monthly_equivalent': None, 'price_status': None})
+        with self.subTest(check='other_score'):
+            self.assertIsNone(offers[1]['observations_summary']['geekbench6_single'])
+        with self.subTest(check='other_flags'):
+            self.assertCountEqual(offers[1]['conflict_flags'],
+                                  ['price: 2 values', 'geekbench6_single: 2 values'])
+
+
 class PublicDTOWhitelistNegativeTests(unittest.TestCase):
     def test_whitelist_rejects_injected_evidence_image_url_field_and_unknown_then_passes_when_removed(self):
         for key, value in (
