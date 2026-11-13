@@ -6,6 +6,7 @@ KEEP_BOTH_PUBLIC_FIELDS 采用冲突别名到公开字段路径集合的显式�
 """
 import copy
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -29,10 +30,16 @@ MAPPING_ROWS = (
     (('vcpu',), ('vcpu',), 'vCPU'),
     (('traffic', 'traffic_value'), ('traffic_value', 'traffic_unit'), '流量'),
     (('traffic_unit',), ('traffic_unit',), '流量单位'),
-    (('price', 'amount', 'currency', 'billing_period_months', 'term_role',
-      'monthly_equivalent', 'price_status'),
+    (('price',),
      ('price.amount', 'price.currency', 'price.billing_period_months',
-      'price.term_role', 'price.monthly_equivalent', 'price.price_status'), '价格'),
+      'price.term_role', 'price.monthly_equivalent'), '价格'),
+    (('amount',), ('price.amount', 'price.monthly_equivalent'), '价格'),
+    (('currency',), ('price.currency',), '价格'),
+    # 月均由金额和周期派生；周期冲突时也清空月均。
+    (('billing_period_months',),
+     ('price.billing_period_months', 'price.monthly_equivalent'), '价格'),
+    (('term_role',), ('price.term_role',), '价格'),
+    (('monthly_equivalent',), ('price.monthly_equivalent',), '价格'),
 )
 
 
@@ -109,12 +116,19 @@ class KeepBothContractTests(unittest.TestCase):
                         'contract_v2 must expose KEEP_BOTH_PUBLIC_FIELDS')
         mapping = c.KEEP_BOTH_PUBLIC_FIELDS
         self.assertIsInstance(mapping, dict)
+        for alias, targets in mapping.items():
+            with self.subTest(no_null_price_status_for=alias):
+                self.assertNotIn('price.price_status', targets)
         for aliases, targets, _label in MAPPING_ROWS:
             for alias in aliases:
                 with self.subTest(alias=alias):
                     self.assertIn(alias, mapping)
                     for target in targets:
                         self.assertIn(target, mapping[alias])
+                    if targets[0].startswith('price.'):
+                        self.assertCountEqual(mapping[alias], targets)
+                        if alias == 'amount':
+                            self.assertEqual(mapping[alias][0], 'price.amount')
 
     def test_contract_documents_explicit_mapping_table(self):
         text = (ROOT / 'docs/CONTRACT-v2.md').read_text(encoding='utf-8')
@@ -123,8 +137,24 @@ class KeepBothContractTests(unittest.TestCase):
                       if line.lstrip().startswith('|')]
         for aliases, targets, label in MAPPING_ROWS:
             with self.subTest(aliases=aliases):
-                # 价格文档可用 price 对象加六个子字段描述，毋需点路径语法。
+                if targets[0].startswith('price.'):
+                    # 分别检查别名列与置空目标列，拒绝整组清空旧表。
+                    for alias in aliases:
+                        matching = [row.split('|') for row in table_rows
+                                    if alias in re.findall(r'`([^`]+)`',
+                                                          row.split('|')[1])]
+                        self.assertTrue(matching, f'missing price alias: {alias}')
+                        for cells in matching:
+                            self.assertCountEqual(
+                                re.findall(r'`([^`]+)`', cells[2]), targets)
+                            self.assertIn(label, cells[3])
+                    continue
+                # 非价格行继续保留原有别名、目标和中文标签断言。
                 tokens = (*aliases, *(target.split('.')[-1] for target in targets), label)
                 self.assertTrue(any(all(token in row for token in tokens)
                                     for row in table_rows),
                                 f'missing keep_both mapping row: {tokens}')
+
+    def test_contract_documents_unresolved_price_conflict_status(self):
+        text = (ROOT / 'docs/CONTRACT-v2.md').read_text(encoding='utf-8')
+        self.assertIn('unresolved_conflict', text)
