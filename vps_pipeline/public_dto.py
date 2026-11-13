@@ -137,7 +137,8 @@ def scan_public_output(path: str | Path) -> None:
         else:
             if file.name == 'data.json':
                 try:
-                    validate_public_dto(data)
+                    from .contract_v2 import validate_public_dto_compatible
+                    validate_public_dto_compatible(data)
                 except ValueError as exc:
                     raise ValueError(f'{file}: {exc}') from exc
             # Decode JSON string escapes before inspecting URL values.
@@ -226,7 +227,12 @@ def _source_link(url):
 
 def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     """Cleanly replace output with validated public data and scan all files."""
-    dto = project_to_public_dto(internal_record)
+    is_review = internal_record.get('schema_version') in ('1.0.0-offline', 'review-document/v2')
+    if is_review:
+        from .contract_v2 import project_review_document_to_public_dto
+        dto = project_review_document_to_public_dto(internal_record)
+    else:
+        dto = project_to_public_dto(internal_record)
     out = Path(out_dir)
     # Inspect the original path before resolve() can hide symbolic links.
     for component in (out, *out.parents):
@@ -236,10 +242,13 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     protected = (ROOT / 'website/dist').resolve()
     if out == protected or protected in out.parents or out in protected.parents:
         raise ValueError('output must not overwrite website/dist')
-    # S1 supports one offer; restrict filenames independently of HTML escaping.
+    # Restrict every filename independently of HTML escaping.
     offers = dto['offers']
-    if len(offers) != 1 or not re.fullmatch(r'[A-Za-z0-9_-]+', offers[0]['offer_id']):
-        raise ValueError('S1 requires one offer with a safe filename identifier')
+    if any(not re.fullmatch(r'[A-Za-z0-9_-]+', o['offer_id']) for o in offers):
+        raise ValueError('offers require safe filename identifiers')
+    page_id = internal_record.get('sample_id') if is_review else None
+    if is_review and (not isinstance(page_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]+', page_id)):
+        raise ValueError('post requires a safe filename identifier')
     if out.exists() and not out.is_dir():
         raise ValueError('output is not a directory; refusing to overwrite')
     marker = out / '.public-dto-build'
@@ -276,14 +285,23 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
         out.chmod(0o777 & ~current_umask)
         (out / 'offers').mkdir()
         cards = []
+        detail_bodies = []
         for offer in offers:
             t = lambda key: _text(offer[key])
             name = f'{offer["offer_id"]} · {offer["vendor_raw"]} · {offer["plan_label"]}'
+            detail_id = page_id if is_review else offer['offer_id']
+            price = offer['price']
+            months = price['billing_period_months']
+            period = '月付' if months == 1 else '年付' if months == 12 else '周期'
+            price_description = (f'{_text(price["amount"])} {_text(price["currency"])} · '
+                                 f'{period} {_text(months)} 个月 · 月均 {_text(price["monthly_equivalent"])}')
+            card_price = (f'{_text(offer["location"]["city"])} · {price_description}' if is_review
+                          else f'{_text(price["amount"])} {_text(price["currency"])}')
             cards.append(
-                f'<article class="result-card"><h2><a href="offers/{t("offer_id")}.html">'
+                f'<article class="result-card"><h2><a href="offers/{_text(detail_id)}.html">'
                 f'{_text(name)}</a></h2><p>{t("vcpu")} vCPU · {t("memory_mb")} MB · '
                 f'{t("disk_total_value")} {t("disk_total_unit")} {t("disk_type")}</p>'
-                f'<p>{_text(offer["price"]["amount"])} {_text(offer["price"]["currency"])}</p>'
+                f'<p>{card_price}</p>'
                 f'<p>{t("summary_text")}</p></article>')
             labels = {
                 'offer_id': '样例标识', 'post_id': '帖子编号', 'vendor_raw': '商家',
@@ -299,13 +317,32 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
             body += f'<article class="result-card detail-content"><h1>{_text(name)}</h1>'
             body += _rows((label, offer[key]) for key, label in labels.items())
             body += '<h2>地点</h2>' + _rows(offer['location'].items())
-            body += '<h2>价格快照</h2>' + _rows(offer['price'].items())
+            body += '<h2>价格快照</h2>'
+            if is_review:
+                body += '<p>' + price_description + '</p>'
+            body += _rows(offer['price'].items())
             body += '<h2>观测摘要</h2>' + _rows(offer['observations_summary'].items())
+            if is_review:
+                body += _rows([('测评时区', offer['review_date_tz'])])
+                for conflict in offer['conflicts']:
+                    body += '<h2>冲突 · ' + _text(conflict['field']) + '</h2>'
+                    body += '<p>' + _text(conflict['resolution'])
+                    if conflict['field'] in ('memory', 'memory_mb') and conflict['resolution'] == 'keep_both':
+                        body += ' · 内存未选定'
+                    body += '</p>'
+                    for candidate in conflict['values']:
+                        body += _rows(candidate.items())
             body += '<h2>冲突标记</h2>' + _text(', '.join(offer['conflict_flags'] or []) or None)
             body += f'<h2>简评</h2><p>{t("summary_text")}</p><h2>原帖</h2>'
             body += _source_link(offer['canonical_url']) + '</article>'
-            (out / 'offers' / f'{offer["offer_id"]}.html').write_text(
-                _page(name, body, '../style.css'), encoding='utf-8')
+            if is_review:
+                detail_bodies.append(body)
+            else:
+                (out / 'offers' / f'{offer["offer_id"]}.html').write_text(
+                    _page(name, body, '../style.css'), encoding='utf-8')
+        if is_review:
+            (out / 'offers' / f'{page_id}.html').write_text(
+                _page(page_id, ''.join(detail_bodies), '../style.css'), encoding='utf-8')
         body = ('<div class="page-heading"><h1>套餐筛选</h1></div>'
                 '<section class="searchbar"><label class="search">搜索套餐'
                 '<input type="search" placeholder="商家、套餐或编号" aria-label="搜索套餐">'
@@ -314,7 +351,7 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
         (out / 'index.html').write_text(_page('套餐筛选 · 合成样例', body), encoding='utf-8')
         (out / 'data.json').write_text(json.dumps(dto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         shutil.copyfile(ROOT / 'website/dist/style.css', out / 'style.css')
-        (out / '.public-dto-build').write_text('public-dto/v1 build output\n', encoding='utf-8')
+        (out / '.public-dto-build').write_text(dto['schema_version'] + ' build output\n', encoding='utf-8')
         scan_public_output(out)
         if target.exists():
             backup = Path(tempfile.mkdtemp(dir=target.parent,
