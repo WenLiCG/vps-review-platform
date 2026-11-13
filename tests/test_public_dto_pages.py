@@ -189,10 +189,21 @@ class PublicDTONegativePagesTests(unittest.TestCase):
         from unittest.mock import patch
         from vps_pipeline import public_dto
 
+        siblings_before = set(self.out.parent.iterdir())
+        self.assertFalse(self.out.exists())
+
         def reject_completed_output(path):
-            self.assertEqual(Path(path).resolve(), self.out.resolve())
-            for relative in ('data.json', 'index.html', 'offers/FX-001.html', 'style.css'):
-                self.assertTrue((Path(path) / relative).is_file(), relative + ' must exist before scan')
+            scanned = Path(path).resolve()
+            for relative in ('data.json', 'index.html', 'offers/FX-001.html',
+                             'style.css', '.public-dto-build'):
+                with self.subTest(completed_file=relative):
+                    self.assertTrue((scanned / relative).is_file(), relative + ' must exist before scan')
+            with self.subTest(check='scan_uses_temporary_directory'):
+                self.assertNotEqual(scanned, self.out.resolve(),
+                                    'scan must gate a temporary site before publishing to --out')
+            with self.subTest(check='temporary_directory_is_sibling'):
+                self.assertEqual(scanned.parent, self.out.parent.resolve())
+                self.assertTrue(scanned.is_dir())
             raise ValueError('synthetic build gate rejection')
 
         with patch.object(public_dto, 'scan_public_output', side_effect=reject_completed_output) as scan:
@@ -200,6 +211,88 @@ class PublicDTONegativePagesTests(unittest.TestCase):
                                         msg='build must propagate production scan rejection'):
                 public_dto.build_public_site(load_internal(), self.out)
             scan.assert_called_once()
+        with self.subTest(check='unpublished_output'):
+            self.assertFalse(self.out.exists(), 'scan rejection must not publish --out')
+        with self.subTest(check='no_temporary_or_backup_residue'):
+            self.assertEqual(set(self.out.parent.iterdir()), siblings_before,
+                             'scan rejection must leave no temporary or backup entries')
+
+    def output_file_snapshot(self):
+        return {path.relative_to(self.out).as_posix(): path.read_bytes()
+                for path in self.out.rglob('*') if path.is_file()}
+
+    def assert_failed_build_preserves_parent(self, siblings_before):
+        self.assertEqual(set(self.out.parent.iterdir()), siblings_before,
+                         'failed build must leave no temporary or backup entries in out.parent')
+
+    def run_contaminated_build_cli(self, input_path):
+        return subprocess.run(
+            [sys.executable, '-B', '-m', 'vps_pipeline.public_dto', 'build',
+             '--input', str(input_path), '--out', str(self.out)],
+            cwd=ROOT, capture_output=True, text=True, timeout=30,
+        )
+
+    def test_build_image_url_rejection_leaves_new_output_absent(self):
+        internal = load_internal()
+        internal['summary']['text'] = 'https://cdn.synthetic.example/original/fx001-hero.png'
+        siblings_before = set(self.out.parent.iterdir())
+        self.assertFalse(self.out.exists())
+        with self.assertRaisesRegex(ValueError, r'(?i)(forbidden|image|url|原图|图片)'):
+            build_public_site(internal, self.out)
+        with self.subTest(check='output_absent'):
+            self.assertFalse(self.out.exists(), 'rejected image URL must not create --out')
+        with self.subTest(check='no_temporary_or_backup_residue'):
+            self.assert_failed_build_preserves_parent(siblings_before)
+
+    def test_cli_build_image_url_rejection_leaves_new_output_absent(self):
+        internal = load_internal()
+        internal['summary']['text'] = 'https://cdn.synthetic.example/original/fx001-hero.png'
+        input_path = self.out.parent / 'contaminated-input.json'
+        input_path.write_text(json.dumps(internal, ensure_ascii=False), encoding='utf-8')
+        siblings_before = set(self.out.parent.iterdir())
+        self.assertFalse(self.out.exists())
+        result = self.run_contaminated_build_cli(input_path)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertRegex(result.stdout + result.stderr, r'(?i)(forbidden|image|url|原图|图片)')
+        with self.subTest(check='output_absent'):
+            self.assertFalse(self.out.exists(), 'CLI image URL rejection must not create --out')
+        with self.subTest(check='no_temporary_or_backup_residue'):
+            self.assert_failed_build_preserves_parent(siblings_before)
+
+    def test_build_nul_rejection_preserves_existing_output_bytes(self):
+        build_public_site(load_internal(), self.out)
+        before = self.output_file_snapshot()
+        self.assertIn('.public-dto-build', before)
+        siblings_before = set(self.out.parent.iterdir())
+        internal = load_internal()
+        internal['summary']['text'] = 'synthetic public summary\x00must be rejected'
+        with self.assertRaisesRegex(ValueError, r'(?i)(forbidden|nul)'):
+            build_public_site(internal, self.out)
+        with self.subTest(check='existing_site_byte_identical'):
+            self.assertTrue(self.out.is_dir())
+            self.assertEqual(self.output_file_snapshot(), before,
+                             'NUL rejection must preserve every existing file and its bytes')
+        with self.subTest(check='no_temporary_or_backup_residue'):
+            self.assert_failed_build_preserves_parent(siblings_before)
+
+    def test_cli_build_nul_rejection_preserves_existing_output_bytes(self):
+        build_public_site(load_internal(), self.out)
+        before = self.output_file_snapshot()
+        self.assertIn('.public-dto-build', before)
+        internal = load_internal()
+        internal['summary']['text'] = 'synthetic public summary\x00must be rejected'
+        input_path = self.out.parent / 'contaminated-input.json'
+        input_path.write_text(json.dumps(internal, ensure_ascii=False), encoding='utf-8')
+        siblings_before = set(self.out.parent.iterdir())
+        result = self.run_contaminated_build_cli(input_path)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertRegex(result.stdout + result.stderr, r'(?i)(forbidden|nul)')
+        with self.subTest(check='existing_site_byte_identical'):
+            self.assertTrue(self.out.is_dir())
+            self.assertEqual(self.output_file_snapshot(), before,
+                             'CLI NUL rejection must preserve every existing file and its bytes')
+        with self.subTest(check='no_temporary_or_backup_residue'):
+            self.assert_failed_build_preserves_parent(siblings_before)
 
     def test_leak_scan_cli_fails_on_injected_evidence_then_passes_on_clean_output(self):
         build_public_site(load_internal(), self.out)

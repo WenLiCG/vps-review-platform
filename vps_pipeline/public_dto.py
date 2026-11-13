@@ -7,10 +7,12 @@ from copy import deepcopy
 from html import escape, unescape
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
 import stat
+import tempfile
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -249,54 +251,68 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
     if out.exists() and any(out.iterdir()) and marker_mode is None:
         raise ValueError('output directory is not a public-dto build output; '
                          'refusing to delete existing files')
-    out.mkdir(parents=True, exist_ok=True)
-    for child in out.iterdir():
-        if child.is_dir() and not child.is_symlink():
-            shutil.rmtree(child)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    target = out
+    out = Path(tempfile.mkdtemp(dir=target.parent, prefix=f'.{target.name}-build-'))
+    try:
+        (out / 'offers').mkdir()
+        cards = []
+        for offer in offers:
+            t = lambda key: _text(offer[key])
+            name = f'{offer["offer_id"]} · {offer["vendor_raw"]} · {offer["plan_label"]}'
+            cards.append(
+                f'<article class="result-card"><h2><a href="offers/{t("offer_id")}.html">'
+                f'{_text(name)}</a></h2><p>{t("vcpu")} vCPU · {t("memory_mb")} MB · '
+                f'{t("disk_total_value")} {t("disk_total_unit")} {t("disk_type")}</p>'
+                f'<p>{_text(offer["price"]["amount"])} {_text(offer["price"]["currency"])}</p>'
+                f'<p>{t("summary_text")}</p></article>')
+            labels = {
+                'offer_id': '样例标识', 'post_id': '帖子编号', 'vendor_raw': '商家',
+                'plan_label': '套餐', 'vcpu': 'vCPU', 'memory_mb': '内存 MB',
+                'disk_total_value': '磁盘容量', 'disk_total_unit': '磁盘单位',
+                'disk_type': '磁盘类型', 'traffic_value': '流量', 'traffic_unit': '流量单位',
+                'port_speed_mbps': '端口 Mbps', 'published_date': '发布日期',
+                'published_tz': '发布时区', 'review_date': '测评日期',
+                'review_date_precision': '日期精度', 'tested_at_beijing': '测试时间（北京）',
+                'limited_claim': '有限结论', 'aff_url': '推广链接',
+            }
+            body = '<a href="../index.html">返回列表</a>'
+            body += f'<article class="result-card detail-content"><h1>{_text(name)}</h1>'
+            body += _rows((label, offer[key]) for key, label in labels.items())
+            body += '<h2>地点</h2>' + _rows(offer['location'].items())
+            body += '<h2>价格快照</h2>' + _rows(offer['price'].items())
+            body += '<h2>观测摘要</h2>' + _rows(offer['observations_summary'].items())
+            body += '<h2>冲突标记</h2>' + _text(', '.join(offer['conflict_flags'] or []) or None)
+            body += f'<h2>简评</h2><p>{t("summary_text")}</p><h2>原帖</h2>'
+            body += _source_link(offer['canonical_url']) + '</article>'
+            (out / 'offers' / f'{offer["offer_id"]}.html').write_text(
+                _page(name, body, '../style.css'), encoding='utf-8')
+        body = ('<div class="page-heading"><h1>套餐筛选</h1></div>'
+                '<section class="searchbar"><label class="search">搜索套餐'
+                '<input type="search" placeholder="商家、套餐或编号" aria-label="搜索套餐">'
+                '</label></section><p>筛选界面预览 · 当前展示全部合成样例</p>'
+                '<section class="results" aria-label="套餐列表">' + ''.join(cards) + '</section>')
+        (out / 'index.html').write_text(_page('套餐筛选 · 合成样例', body), encoding='utf-8')
+        (out / 'data.json').write_text(json.dumps(dto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        shutil.copyfile(ROOT / 'website/dist/style.css', out / 'style.css')
+        (out / '.public-dto-build').write_text('public-dto/v1 build output\n', encoding='utf-8')
+        scan_public_output(out)
+        if target.exists():
+            backup = Path(tempfile.mkdtemp(dir=target.parent,
+                                           prefix=f'.{target.name}-backup-'))
+            backup.rmdir()
+            os.rename(target, backup)
+            try:
+                os.rename(out, target)
+            except BaseException:
+                os.rename(backup, target)
+                raise
+            shutil.rmtree(backup)
         else:
-            child.unlink()
-    (out / 'offers').mkdir()
-    cards = []
-    for offer in offers:
-        t = lambda key: _text(offer[key])
-        name = f'{offer["offer_id"]} · {offer["vendor_raw"]} · {offer["plan_label"]}'
-        cards.append(
-            f'<article class="result-card"><h2><a href="offers/{t("offer_id")}.html">'
-            f'{_text(name)}</a></h2><p>{t("vcpu")} vCPU · {t("memory_mb")} MB · '
-            f'{t("disk_total_value")} {t("disk_total_unit")} {t("disk_type")}</p>'
-            f'<p>{_text(offer["price"]["amount"])} {_text(offer["price"]["currency"])}</p>'
-            f'<p>{t("summary_text")}</p></article>')
-        labels = {
-            'offer_id': '样例标识', 'post_id': '帖子编号', 'vendor_raw': '商家',
-            'plan_label': '套餐', 'vcpu': 'vCPU', 'memory_mb': '内存 MB',
-            'disk_total_value': '磁盘容量', 'disk_total_unit': '磁盘单位',
-            'disk_type': '磁盘类型', 'traffic_value': '流量', 'traffic_unit': '流量单位',
-            'port_speed_mbps': '端口 Mbps', 'published_date': '发布日期',
-            'published_tz': '发布时区', 'review_date': '测评日期',
-            'review_date_precision': '日期精度', 'tested_at_beijing': '测试时间（北京）',
-            'limited_claim': '有限结论', 'aff_url': '推广链接',
-        }
-        body = '<a href="../index.html">返回列表</a>'
-        body += f'<article class="result-card detail-content"><h1>{_text(name)}</h1>'
-        body += _rows((label, offer[key]) for key, label in labels.items())
-        body += '<h2>地点</h2>' + _rows(offer['location'].items())
-        body += '<h2>价格快照</h2>' + _rows(offer['price'].items())
-        body += '<h2>观测摘要</h2>' + _rows(offer['observations_summary'].items())
-        body += '<h2>冲突标记</h2>' + _text(', '.join(offer['conflict_flags'] or []) or None)
-        body += f'<h2>简评</h2><p>{t("summary_text")}</p><h2>原帖</h2>'
-        body += _source_link(offer['canonical_url']) + '</article>'
-        (out / 'offers' / f'{offer["offer_id"]}.html').write_text(
-            _page(name, body, '../style.css'), encoding='utf-8')
-    body = ('<div class="page-heading"><h1>套餐筛选</h1></div>'
-            '<section class="searchbar"><label class="search">搜索套餐'
-            '<input type="search" placeholder="商家、套餐或编号" aria-label="搜索套餐">'
-            '</label></section><p>筛选界面预览 · 当前展示全部合成样例</p>'
-            '<section class="results" aria-label="套餐列表">' + ''.join(cards) + '</section>')
-    (out / 'index.html').write_text(_page('套餐筛选 · 合成样例', body), encoding='utf-8')
-    (out / 'data.json').write_text(json.dumps(dto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    shutil.copyfile(ROOT / 'website/dist/style.css', out / 'style.css')
-    (out / '.public-dto-build').write_text('public-dto/v1 build output\n', encoding='utf-8')
-    scan_public_output(out)
+            os.rename(out, target)
+    finally:
+        if out.exists():
+            shutil.rmtree(out)
 
 
 def main():
