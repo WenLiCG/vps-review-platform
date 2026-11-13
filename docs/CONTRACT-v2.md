@@ -14,8 +14,24 @@
 review-document/v2；兼容读取器也接受 1.0.0-offline。内部可保留 private_key、
 capture_file 和 notice，但公共投影只复制白名单字段，不复制 evidence、asset_ref、
 作者、捕获路径、原图或引文。多套餐保留各自配置和价格，详情页在同一帖中展示。
-keep_both 内存冲突不选定唯一值：memory_mb 为 null，公开候选仅包含
-source、raw、normalized_mb_candidate，并保留字段和 resolution。
+`keep_both` 冲突不选定唯一值：按以下显式映射将对应公开字段全部置为 null。
+映射常量为 `KEEP_BOTH_PUBLIC_FIELDS`；价格使用 `price.amount` 等点路径，
+表示 `price` 对象内的子字段。任何未映射的冲突字段均抛出包含字段名的
+ValueError，禁止静默忽略。公开候选仅包含 source、raw、normalized_mb_candidate，
+全部候选保留，并保留字段、resolution 和冲突标记。详情页对每个 keep_both
+冲突显示「{中文标签}未选定」，例如「磁盘未选定」「内存未选定」。
+
+| 冲突字段（任一别名） | 公开字段（keep_both 时全部置 null） | 页面中文标签 |
+| --- | --- | --- |
+| `memory`, `memory_mb` | `memory_mb` | 内存 |
+| `disk`, `disk_value`, `disk_total_value` | `disk_total_value`, `disk_total_unit` | 磁盘 |
+| `disk_unit`, `disk_total_unit` | `disk_total_unit` | 磁盘单位 |
+| `disk_type` | `disk_type` | 磁盘类型 |
+| `port`, `port_mbps`, `port_speed_mbps` | `port_speed_mbps` | 端口 |
+| `vcpu` | `vcpu` | vCPU |
+| `traffic`, `traffic_value` | `traffic_value`, `traffic_unit` | 流量 |
+| `traffic_unit` | `traffic_unit` | 流量单位 |
+| `price`, `amount`, `currency`, `billing_period_months`, `term_role`, `monthly_equivalent`, `price_status` | `price.amount`, `price.currency`, `price.billing_period_months`, `price.term_role`, `price.monthly_equivalent`, `price.price_status` | 价格 |
 
 ## D2 日期
 

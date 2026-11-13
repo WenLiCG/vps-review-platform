@@ -327,8 +327,10 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
                 for conflict in offer['conflicts']:
                     body += '<h2>冲突 · ' + _text(conflict['field']) + '</h2>'
                     body += '<p>' + _text(conflict['resolution'])
-                    if conflict['field'] in ('memory', 'memory_mb') and conflict['resolution'] == 'keep_both':
-                        body += ' · 内存未选定'
+                    if conflict['resolution'] == 'keep_both':
+                        from .contract_v2 import KEEP_BOTH_FIELD_LABELS, KEEP_BOTH_PUBLIC_FIELDS
+                        public_field = KEEP_BOTH_PUBLIC_FIELDS[conflict['field']][0]
+                        body += ' · ' + _text(KEEP_BOTH_FIELD_LABELS[public_field]) + '未选定'
                     body += '</p>'
                     for candidate in conflict['values']:
                         body += _rows(candidate.items())

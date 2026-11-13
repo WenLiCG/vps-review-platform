@@ -13,6 +13,42 @@ CAPTURE_MANIFEST_SCHEMA_VERSION = 'capture-manifest/v1'
 PRICE_SEMANTICS_VERSION = 'price-semantics/v2'
 ROOT = Path(__file__).resolve().parents[1]
 
+_KEEP_BOTH_PRICE_FIELDS = (
+    'price.amount', 'price.currency', 'price.billing_period_months',
+    'price.term_role', 'price.monthly_equivalent', 'price.price_status',
+)
+KEEP_BOTH_PUBLIC_FIELDS = {
+    'memory': ('memory_mb',),
+    'memory_mb': ('memory_mb',),
+    'disk': ('disk_total_value', 'disk_total_unit'),
+    'disk_value': ('disk_total_value', 'disk_total_unit'),
+    'disk_total_value': ('disk_total_value', 'disk_total_unit'),
+    'disk_unit': ('disk_total_unit',),
+    'disk_total_unit': ('disk_total_unit',),
+    'disk_type': ('disk_type',),
+    'port': ('port_speed_mbps',),
+    'port_mbps': ('port_speed_mbps',),
+    'port_speed_mbps': ('port_speed_mbps',),
+    'vcpu': ('vcpu',),
+    'traffic': ('traffic_value', 'traffic_unit'),
+    'traffic_value': ('traffic_value', 'traffic_unit'),
+    'traffic_unit': ('traffic_unit',),
+    'price': _KEEP_BOTH_PRICE_FIELDS,
+    'amount': _KEEP_BOTH_PRICE_FIELDS,
+    'currency': _KEEP_BOTH_PRICE_FIELDS,
+    'billing_period_months': _KEEP_BOTH_PRICE_FIELDS,
+    'term_role': _KEEP_BOTH_PRICE_FIELDS,
+    'monthly_equivalent': _KEEP_BOTH_PRICE_FIELDS,
+    'price_status': _KEEP_BOTH_PRICE_FIELDS,
+}
+KEEP_BOTH_FIELD_LABELS = {
+    'memory_mb': '内存', 'disk_total_value': '磁盘',
+    'disk_total_unit': '磁盘单位', 'disk_type': '磁盘类型',
+    'port_speed_mbps': '端口', 'vcpu': 'vCPU',
+    'traffic_value': '流量', 'traffic_unit': '流量单位',
+    'price.amount': '价格',
+}
+
 
 def normalize_tested_at(tested_at_raw: str | None) -> dict:
     result = dict(tested_at_raw=tested_at_raw, tested_at_beijing=None,
@@ -173,6 +209,9 @@ def project_review_document_to_public_dto(doc) -> dict:
         conflicts = [{ 'field': c['field'], 'resolution': c['resolution'],
                       'values': [{k: v.get(k) for k in ('source', 'raw', 'normalized_mb_candidate')} for v in c['values']]}
                      for o in observations for c in o.get('conflicts', [])]
+        for conflict in conflicts:
+            if conflict['field'] not in KEEP_BOTH_PUBLIC_FIELDS:
+                raise ValueError(f'unmapped conflict field: {conflict["field"]}')
         prices = plan['prices']
         selected = next((p for p in prices if p.get('term_role') == 'renewal'), prices[0] if len(prices) == 1 else {})
         price = {k: selected.get(k) for k in PRICE['properties']}
@@ -193,8 +232,14 @@ def project_review_document_to_public_dto(doc) -> dict:
                      **{k: n[k] for k in ('review_date', 'review_date_precision', 'review_date_tz', 'tested_at_beijing')})
         if len(doc['plans']) > 1 and plan.get('label'):
             offer['offer_id'] = doc['sample_id'] + '-' + plan['label']
-        if any(c['field'] in ('memory', 'memory_mb') and c['resolution'] == 'keep_both' for c in conflicts):
-            offer['memory_mb'] = None
+        for conflict in conflicts:
+            if conflict['resolution'] == 'keep_both':
+                for path in KEEP_BOTH_PUBLIC_FIELDS[conflict['field']]:
+                    target = offer
+                    parts = path.split('.')
+                    for part in parts[:-1]:
+                        target = target[part]
+                    target[parts[-1]] = None
         offers.append(offer)
     dto = {'schema_version': PUBLIC_DTO_V2_VERSION, 'offers': offers}
     validate_public_dto_compatible(dto)
