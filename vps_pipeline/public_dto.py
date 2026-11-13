@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import sys
 import tempfile
 from urllib.parse import urlsplit
 
@@ -326,7 +327,11 @@ def build_public_site(internal_record: dict, out_dir: str | Path) -> None:
             except BaseException:
                 os.rename(backup, target)
                 raise
-            shutil.rmtree(backup)
+            try:
+                shutil.rmtree(backup)
+            except OSError:
+                print(f'warning: could not delete backup directory: {backup.resolve()}',
+                      file=sys.stderr)
         else:
             os.rename(out, target)
             published = True
