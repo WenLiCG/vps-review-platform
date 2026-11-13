@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0.0-offline",
+  "synthetic": true,
+  "synthetic_disclaimer": "SYNTHETIC FIXTURE — 人工构造，非真实 NodeSeek 帖子内容；仅供离线解析/契约验收。",
+  "source": {
+    "site": "synthetic.example",
+    "source_post_id": "synth-008b",
+    "url": "https://synthetic.example/post/synth-008b",
+    "author": "fixture_author_h2",
+    "published_at": "2025-06-03T23:00:00+08:00",
+    "fetched_at": "2026-11-06T23:00:00+08:00",
+    "parser_version": "offline-spec-1",
+    "first_post_only": true
+  },
+  "plans": [
+    {
+      "plan_id": "synth-008b-plan",
+      "provider_name": null,
+      "label": null,
+      "fields": {
+        "vcpu": 2,
+        "memory_mb": 4096,
+        "disk_value": 100,
+        "disk_unit": "GB",
+        "disk_type": null,
+        "traffic_value": null,
+        "traffic_unit": null,
+        "port_mbps": null,
+        "ipv4_mode": "unknown",
+        "virtualization": null,
+        "location": {
+          "region_label": "欧洲/伦敦",
+          "country_code": "GB",
+          "city": "伦敦"
+        }
+      },
+      "field_evidence": {
+        "vcpu": {
+          "kind": "text_quote",
+          "quote": "2C4G100G",
+          "asset_ref": null,
+          "region_box": null,
+          "confidence": 0.9,
+          "extractor": "rule_text",
+          "notes": null
+        }
+      },
+      "prices": [
+        {
+          "currency": "USD",
+          "billing_period_months": 1,
+          "amount": 10,
+          "term_role": "renewal",
+          "monthly_equivalent": 10,
+          "coupon_code": null,
+          "evidence": {
+            "kind": "text_quote",
+            "quote": "10USD 月付",
+            "asset_ref": null,
+            "region_box": null,
+            "confidence": 0.9,
+            "extractor": "rule_text",
+            "notes": null
+          }
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "observation_id": "synth-008b-obs",
+      "plan_id": "synth-008b-plan",
+      "run_id": "synth-008b-run",
+      "tested_at_raw": "2025-06-03",
+      "tested_at_beijing": null,
+      "tz_confidence": "unknown",
+      "published_at_must_not_fill_tested_at": true,
+      "routes": [],
+      "benchmarks": [],
+      "latency": [],
+      "speed": [],
+      "streaming": [],
+      "conflicts": [],
+      "review_date": "2025-06-03",
+      "review_date_precision": "day",
+      "review_date_tz": "unknown"
+    }
+  ],
+  "derived": {
+    "tags": [],
+    "aggregates": {
+      "route_stability": null,
+      "gb6_single_median": null,
+      "gb6_single_samples": 0
+    },
+    "sample_policy": {
+      "min_samples_for_stability_tag": 5,
+      "dedupe_by_run_id": true
+    }
+  },
+  "export": {
+    "suggested_filename": "10USD-mo_伦敦_2C4G100G_20250603__synth-008b",
+    "collision_suffix": "synth-008b",
+    "filename_notes": "基础名相同必须附加 source_post_id"
+  },
+  "review_status": {
+    "state": "auto_ok",
+    "needs_human": false,
+    "reasons": []
+  },
+  "summary": {
+    "text": "碰撞对 B。",
+    "limited_claim": true,
+    "based_on_fields": [
+      "export"
+    ]
+  },
+  "unit_notes": null,
+  "notice": "人工构造，非真实帖子",
+  "sample_id": "FX-008B"
+}

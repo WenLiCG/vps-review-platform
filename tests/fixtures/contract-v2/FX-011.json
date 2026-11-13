@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0-offline",
+  "synthetic": true,
+  "synthetic_disclaimer": "SYNTHETIC FIXTURE — 人工构造，非真实 NodeSeek 帖子内容；仅供离线解析/契约验收。",
+  "source": {
+    "site": "synthetic.example",
+    "source_post_id": "synth-011",
+    "url": "https://synthetic.example/post/synth-011",
+    "author": "fixture_author_k",
+    "published_at": "2025-01-15T00:00:00+08:00",
+    "fetched_at": "2026-11-06T23:00:00+08:00",
+    "parser_version": "offline-spec-1",
+    "first_post_only": true
+  },
+  "plans": [
+    {
+      "plan_id": "synth-011-plan",
+      "provider_name": null,
+      "label": null,
+      "fields": {
+        "vcpu": null,
+        "memory_mb": null,
+        "disk_value": null,
+        "disk_unit": null,
+        "disk_type": null,
+        "traffic_value": null,
+        "traffic_unit": null,
+        "port_mbps": null,
+        "ipv4_mode": null,
+        "virtualization": null,
+        "location": null
+      },
+      "field_evidence": {},
+      "prices": []
+    }
+  ],
+  "observations": [
+    {
+      "observation_id": "synth-011-obs",
+      "plan_id": "synth-011-plan",
+      "run_id": "synth-011-run",
+      "tested_at_raw": "2025-01-14",
+      "tested_at_beijing": null,
+      "tz_confidence": "unknown",
+      "published_at_must_not_fill_tested_at": true,
+      "routes": [
+        {
+          "carrier": "CM",
+          "direction": "inbound",
+          "asn_path": [],
+          "route_tags": [
+            "CMIN2"
+          ],
+          "route_class": "china_access",
+          "confidence": 0.6,
+          "evidence": {
+            "kind": "text_quote",
+            "quote": "单次移动回程自称 CMIN2",
+            "asset_ref": null,
+            "region_box": null,
+            "confidence": 0.9,
+            "extractor": "rule_text",
+            "notes": null
+          }
+        }
+      ],
+      "benchmarks": [],
+      "latency": [],
+      "speed": [],
+      "streaming": [],
+      "conflicts": [],
+      "review_date": "2025-01-14",
+      "review_date_precision": "day",
+      "review_date_tz": "unknown"
+    }
+  ],
+  "derived": {
+    "tags": [],
+    "aggregates": {
+      "route_stability": null,
+      "gb6_single_median": null,
+      "gb6_single_samples": 0
+    },
+    "sample_policy": {
+      "min_samples_for_stability_tag": 5,
+      "dedupe_by_run_id": true
+    }
+  },
+  "export": {
+    "suggested_filename": "unknownPrice_unknownLoc_unknownCfg_20250114__synth-011",
+    "collision_suffix": "synth-011",
+    "filename_notes": "derived.tags 不得含多样本稳定类标签"
+  },
+  "review_status": {
+    "state": "auto_ok",
+    "needs_human": false,
+    "reasons": []
+  },
+  "summary": {
+    "text": "单次观测可保留 route_tags=CMIN2；不得派生 #线路稳定。",
+    "limited_claim": true,
+    "based_on_fields": [
+      "routes",
+      "derived.tags"
+    ]
+  },
+  "unit_notes": null,
+  "notice": "人工构造，非真实帖子",
+  "sample_id": "FX-011"
+}
