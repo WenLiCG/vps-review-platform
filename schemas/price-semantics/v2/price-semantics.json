@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "price-semantics/v2"
+    },
+    "term_role": {
+      "type": "string",
+      "enum": [
+        "first_term",
+        "renewal",
+        "unknown"
+      ]
+    },
+    "price_status": {
+      "type": "string",
+      "enum": [
+        "known",
+        "unknown",
+        "partial",
+        "unresolved_conflict"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "term_role",
+    "price_status"
+  ],
+  "additionalProperties": false,
+  "title": "price-semantics/v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

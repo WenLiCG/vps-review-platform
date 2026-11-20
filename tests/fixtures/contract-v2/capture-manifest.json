@@ -1,0 +1,32 @@
+{
+  "synthetic": true,
+  "notice": "人工构造，非真实帖子",
+  "schema_version": "capture-manifest/v1",
+  "capture_id": "synth-002",
+  "revision": 1,
+  "captured_at": "2025-07-01T12:00:00+08:00",
+  "operator": "fixture_author_b",
+  "tabs": [
+    {
+      "name": "basic",
+      "status": "captured",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "benchmark",
+      "status": "missing"
+    },
+    {
+      "name": "streaming",
+      "status": "not_present"
+    }
+  ],
+  "images": [
+    {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "private_key": "pk_synth_do_not_publish_FX002"
+    }
+  ],
+  "challenge_encountered": false,
+  "status": "incomplete"
+}

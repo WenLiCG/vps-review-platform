@@ -1,0 +1,932 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "review-document/v2"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "synthetic_disclaimer": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "site": {
+          "type": "string"
+        },
+        "source_post_id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "author": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fetched_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parser_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "first_post_only": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "site",
+        "source_post_id",
+        "url",
+        "author",
+        "published_at",
+        "fetched_at",
+        "parser_version",
+        "first_post_only"
+      ],
+      "additionalProperties": false
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string"
+          },
+          "provider_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "properties": {
+              "memory_mb": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "disk_value": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "traffic_value": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "port_mbps": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "vcpu": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "disk_unit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "disk_type": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "traffic_unit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ipv4_mode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "virtualization": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "location": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "region_label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "city": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "region_label",
+                  "country_code",
+                  "city"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "memory_mb",
+              "disk_value",
+              "traffic_value",
+              "port_mbps",
+              "vcpu",
+              "disk_unit",
+              "disk_type",
+              "traffic_unit",
+              "ipv4_mode",
+              "virtualization",
+              "location"
+            ],
+            "additionalProperties": false
+          },
+          "field_evidence": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string"
+                },
+                "quote": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "asset_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "region_box": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "x": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "y": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "w": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "h": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "unit": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y",
+                    "w",
+                    "h",
+                    "unit"
+                  ],
+                  "additionalProperties": false
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "extractor": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "kind",
+                "quote",
+                "asset_ref",
+                "region_box",
+                "confidence",
+                "extractor",
+                "notes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "currency": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "billing_period_months": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "term_role": {
+                  "type": "string",
+                  "enum": [
+                    "first_term",
+                    "renewal",
+                    "unknown"
+                  ]
+                },
+                "monthly_equivalent": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "coupon_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "evidence": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "quote": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "asset_ref": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "region_box": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "x": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "y": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "w": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "h": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "w",
+                        "h",
+                        "unit"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "confidence": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "extractor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "notes": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "quote",
+                    "asset_ref",
+                    "region_box",
+                    "confidence",
+                    "extractor",
+                    "notes"
+                  ],
+                  "additionalProperties": false
+                },
+                "price_status": {
+                  "type": "string",
+                  "enum": [
+                    "known",
+                    "unknown",
+                    "partial"
+                  ]
+                }
+              },
+              "required": [
+                "currency",
+                "billing_period_months",
+                "amount",
+                "term_role",
+                "monthly_equivalent"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "plan_id",
+          "provider_name",
+          "label",
+          "fields",
+          "field_evidence",
+          "prices"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "observation_id": {
+            "type": "string"
+          },
+          "plan_id": {
+            "type": "string"
+          },
+          "run_id": {
+            "type": "string"
+          },
+          "tested_at_raw": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tested_at_beijing": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tz_confidence": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "explicit",
+              "inferred_weak"
+            ]
+          },
+          "published_at_must_not_fill_tested_at": {
+            "type": "boolean"
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "carrier": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "direction": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "asn_path": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "integer",
+                      "string"
+                    ]
+                  }
+                },
+                "route_tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "route_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "evidence": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "quote": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "asset_ref": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "region_box": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "x": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "y": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "w": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "h": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "w",
+                        "h",
+                        "unit"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "confidence": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "extractor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "notes": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "quote",
+                    "asset_ref",
+                    "region_box",
+                    "confidence",
+                    "extractor",
+                    "notes"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "carrier",
+                "direction",
+                "asn_path",
+                "route_tags",
+                "route_class",
+                "confidence",
+                "evidence"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "benchmarks": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "latency": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "speed": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "streaming": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "raw": {
+                        "type": "string"
+                      },
+                      "normalized_mb_candidate": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "asset_ref": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "raw",
+                      "normalized_mb_candidate"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "resolution": {
+                  "type": "string",
+                  "enum": [
+                    "keep_both",
+                    "selected",
+                    "unresolved"
+                  ]
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "values",
+                "resolution"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "review_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "review_date_precision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "review_date_tz": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "observation_id",
+          "plan_id",
+          "run_id",
+          "tested_at_raw",
+          "tested_at_beijing",
+          "tz_confidence",
+          "routes",
+          "benchmarks",
+          "latency",
+          "speed",
+          "streaming",
+          "conflicts"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "derived": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "aggregates": {
+          "type": "object",
+          "properties": {
+            "route_stability": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "gb6_single_median": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "gb6_single_samples": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "route_stability",
+            "gb6_single_median",
+            "gb6_single_samples"
+          ],
+          "additionalProperties": false
+        },
+        "sample_policy": {
+          "type": "object",
+          "properties": {
+            "min_samples_for_stability_tag": {
+              "type": "integer",
+              "minimum": 5
+            },
+            "dedupe_by_run_id": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "min_samples_for_stability_tag",
+            "dedupe_by_run_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "tags",
+        "aggregates",
+        "sample_policy"
+      ],
+      "additionalProperties": false
+    },
+    "export": {
+      "type": "object",
+      "properties": {
+        "suggested_filename": {
+          "type": "string"
+        },
+        "collision_suffix": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filename_notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "suggested_filename",
+        "collision_suffix",
+        "filename_notes"
+      ],
+      "additionalProperties": false
+    },
+    "review_status": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string"
+        },
+        "needs_human": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "state",
+        "needs_human",
+        "reasons"
+      ],
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limited_claim": {
+          "type": "boolean"
+        },
+        "based_on_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "text",
+        "limited_claim",
+        "based_on_fields"
+      ],
+      "additionalProperties": false
+    },
+    "unit_notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notice": {
+      "type": "string"
+    },
+    "sample_id": {
+      "type": "string"
+    },
+    "private_key": {
+      "type": "string"
+    },
+    "capture_file": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "source",
+    "plans",
+    "observations",
+    "derived",
+    "summary",
+    "sample_id"
+  ],
+  "additionalProperties": false,
+  "title": "review-document/v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

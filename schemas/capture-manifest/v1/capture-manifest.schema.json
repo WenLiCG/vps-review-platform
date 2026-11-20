@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "capture-manifest/v1"
+    },
+    "capture_id": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "captured_at": {
+      "type": "string"
+    },
+    "operator": {
+      "type": "string"
+    },
+    "tabs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "captured",
+              "missing",
+              "not_present"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ],
+        "additionalProperties": false,
+        "if": {
+          "properties": {
+            "status": {
+              "const": "captured"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        },
+        "then": {
+          "required": [
+            "sha256"
+          ]
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          },
+          "private_key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sha256",
+          "private_key"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "challenge_encountered": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "incomplete",
+        "complete",
+        "failed"
+      ]
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "notice": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "capture_id",
+    "revision",
+    "captured_at",
+    "operator",
+    "tabs",
+    "images",
+    "challenge_encountered",
+    "status"
+  ],
+  "additionalProperties": false,
+  "title": "capture-manifest/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

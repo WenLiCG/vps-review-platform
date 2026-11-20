@@ -1,0 +1,91 @@
+{
+  "schema_version": "review-document/v2",
+  "synthetic": true,
+  "notice": "人工构造，非真实帖子；仅供离线 keep_both 契约验收。",
+  "sample_id": "FX-S2-DISK",
+  "source": {
+    "site": "synthetic.example",
+    "source_post_id": "synth-s2-disk",
+    "url": "https://synthetic.example/post/synth-s2-disk",
+    "author": null,
+    "published_at": null,
+    "fetched_at": null,
+    "parser_version": "synthetic-s2",
+    "first_post_only": true
+  },
+  "plans": [
+    {
+      "plan_id": "synth-s2-disk-plan",
+      "provider_name": null,
+      "label": null,
+      "fields": {
+        "vcpu": null,
+        "memory_mb": null,
+        "disk_value": 40,
+        "disk_unit": "GB",
+        "disk_type": null,
+        "traffic_value": null,
+        "traffic_unit": null,
+        "port_mbps": null,
+        "ipv4_mode": null,
+        "virtualization": null,
+        "location": null
+      },
+      "field_evidence": {},
+      "prices": []
+    }
+  ],
+  "observations": [
+    {
+      "observation_id": "synth-s2-disk-obs",
+      "plan_id": "synth-s2-disk-plan",
+      "run_id": "synth-s2-disk-run",
+      "tested_at_raw": null,
+      "tested_at_beijing": null,
+      "tz_confidence": "unknown",
+      "routes": [],
+      "benchmarks": [],
+      "latency": [],
+      "speed": [],
+      "streaming": [],
+      "conflicts": [
+        {
+          "field": "disk",
+          "resolution": "keep_both",
+          "values": [
+            {
+              "source": "text",
+              "raw": "40GB",
+              "normalized_mb_candidate": null
+            },
+            {
+              "source": "ocr",
+              "raw": "80GB",
+              "normalized_mb_candidate": null,
+              "asset_ref": "assets/synth-s2-disk-private.png"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "derived": {
+    "tags": [],
+    "aggregates": {
+      "route_stability": null,
+      "gb6_single_median": null,
+      "gb6_single_samples": 0
+    },
+    "sample_policy": {
+      "min_samples_for_stability_tag": 5,
+      "dedupe_by_run_id": true
+    }
+  },
+  "summary": {
+    "text": "合成磁盘冲突验收样本。",
+    "limited_claim": true,
+    "based_on_fields": [
+      "conflicts"
+    ]
+  }
+}
