@@ -1,0 +1,22 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "tested_at_null",
+    "path": "$.observations.0.tested_at_beijing",
+    "equals": null
+  },
+  {
+    "name": "fn_unknownDate",
+    "path": "$.export.suggested_filename",
+    "contains": "unknownDate"
+  }
+]

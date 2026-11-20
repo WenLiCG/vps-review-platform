@@ -1,0 +1,12 @@
+{
+  "case_id": "FX-010",
+  "title": "线路仅见 AS4809 不得判 GIA",
+  "covers": [
+    "线路仅AS4809不能判GIA"
+  ],
+  "synthetic": true,
+  "synthetic_disclaimer": "SYNTHETIC FIXTURE — 人工构造，非真实 NodeSeek 帖子内容；仅供离线解析/契约验收。",
+  "raw_excerpt_file": "raw.excerpt.txt",
+  "expected_file": "expected.normalized.json",
+  "asserts_file": "acceptance.asserts.json"
+}

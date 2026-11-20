@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/vps-review/schemas/observation.json",
+  "title": "ObservationRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observation_id",
+    "plan_id",
+    "run_id"
+  ],
+  "properties": {
+    "observation_id": {
+      "type": "string"
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "tested_at_raw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tested_at_beijing": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tz_confidence": {
+      "enum": [
+        "explicit",
+        "inferred_weak",
+        "unknown"
+      ]
+    },
+    "published_at_must_not_fill_tested_at": {
+      "const": true
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "carrier",
+          "direction",
+          "evidence"
+        ],
+        "properties": {
+          "carrier": {
+            "enum": [
+              "CT",
+              "CU",
+              "CM",
+              "unknown"
+            ]
+          },
+          "direction": {
+            "enum": [
+              "outbound",
+              "inbound",
+              "unknown"
+            ]
+          },
+          "asn_path": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "route_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "route_class": {
+            "enum": [
+              "china_access",
+              "international_transit",
+              "unknown"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "$ref": "evidence.json"
+          }
+        }
+      }
+    },
+    "benchmarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "suite",
+          "version_major",
+          "metric",
+          "score",
+          "evidence"
+        ],
+        "properties": {
+          "suite": {
+            "enum": [
+              "geekbench",
+              "sysbench",
+              "other"
+            ]
+          },
+          "version_major": {
+            "type": "integer"
+          },
+          "metric": {
+            "enum": [
+              "single_core",
+              "multi_core",
+              "other"
+            ]
+          },
+          "score": {
+            "type": "number"
+          },
+          "evidence": {
+            "$ref": "evidence.json"
+          }
+        }
+      }
+    },
+    "latency": {
+      "type": "array"
+    },
+    "speed": {
+      "type": "array"
+    },
+    "streaming": {
+      "type": "array"
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "values",
+          "resolution"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array"
+          },
+          "resolution": {
+            "enum": [
+              "keep_both",
+              "prefer_text",
+              "prefer_ocr",
+              "null_out",
+              "human_review"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

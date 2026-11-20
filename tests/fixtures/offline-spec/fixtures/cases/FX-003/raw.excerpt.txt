@@ -1,0 +1,2 @@
+正文写：内存 2GB。
+[图片 synth-img-mem.png 预期 OCR：Memory: 4.0 GiB]

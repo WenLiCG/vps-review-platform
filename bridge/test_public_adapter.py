@@ -28,6 +28,10 @@ class AdapterTests(unittest.TestCase):
   self.fact('vcpu',2,status='unknown');self.assertRaises(ValueError,self.run_project)
  def test_official_not_filter_eligible(self):
   self.fact('vcpu',64,status='official_current');out=self.run_project();row=next(x for x in out['fieldObservations']if x['skillFieldId']=='vcpu');self.assertEqual(row['value'],64);self.assertFalse(row['filterEligible'])
+ def test_missing_currency_is_not_defaulted_to_usd(self):
+  self.fact('monthly_price',{'amount':0.99,'currency':'USD'},status='inferred',note='未写币种，按模板约定默认USD')
+  row=next(x for x in self.run_project()['fieldObservations']if x['skillFieldId']=='monthly_price')
+  self.assertIsNone(row['value']['currency']);self.assertEqual(row['value']['amount'],0.99);self.assertFalse(row['filterEligible']);self.assertEqual(row['status'],'unknown')
  def test_price_no_fx_or_cycle_invention(self):
   self.fact('monthly_price',{'amount':5,'currency':'EUR'},status='computed');out=self.run_project();row=next(x for x in out['fieldObservations']if x['skillFieldId']=='monthly_price');self.assertEqual(row['value'],{'amount':5,'currency':'EUR'});self.assertIsNone(next(x for x in out['fieldObservations']if x['skillFieldId']=='billing_period')['value'])
  def test_gb_versions_separate(self):

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "beijing_cross_day",
+    "path": "$.observations.0.tested_at_beijing",
+    "equals": "2025-06-04T01:30:00+08:00"
+  },
+  {
+    "name": "fn_20250604",
+    "path": "$.export.suggested_filename",
+    "contains": "20250604"
+  }
+]

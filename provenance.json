@@ -2,7 +2,7 @@
   "source_files": [
     {
       "source": "vps-review-analyze/SKILL.md",
-      "sha256": "ffc8317701189fafd385aa128efd3abee1d846cc39d000d35a0c64bbb1d1c0b6",
+      "sha256": "8ab717493d956c208982f76e02fd01766735f8daab4fdb6855620d78d7ba91ab",
       "copy": "vps_pipeline/vendor/vps-review-analyze/SKILL.md"
     },
     {
@@ -12,7 +12,7 @@
     },
     {
       "source": "vps-review-analyze/references/fields.json",
-      "sha256": "9b4558d269bd7270fb91da1f1bd922cc0a0603c9dd0065ddf3e0045038e89584",
+      "sha256": "b6c368755c13333fab29c6b484be2e3c2d82f267759f2a123576ad3cc849c554",
       "copy": "vps_pipeline/vendor/vps-review-analyze/references/fields.json"
     },
     {

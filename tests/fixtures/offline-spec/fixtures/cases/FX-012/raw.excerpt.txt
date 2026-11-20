@@ -1,0 +1,1 @@
+同一次 YABS 输出中出现两行 Geekbench 6 Single（重复粘贴）：1420 与 1420。

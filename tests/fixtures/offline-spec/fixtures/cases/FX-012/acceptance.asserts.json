@@ -1,0 +1,17 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "samples1",
+    "path": "$.derived.aggregates.gb6_single_samples",
+    "equals": 1
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "two_benches",
+    "path": "$.observations.0.benchmarks",
+    "length": 2
+  }
+]

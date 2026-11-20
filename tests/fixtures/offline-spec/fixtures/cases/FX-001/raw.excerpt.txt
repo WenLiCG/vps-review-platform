@@ -1,0 +1,6 @@
+【测评】示例云 London Mini
+配置：2核 4GB 内存 40GB NVMe 流量 1TB 端口 1000Mbps
+价格：10 USD / 月
+地点：欧洲/伦敦
+测试时间：2025-06-03 21:00 (北京时间)
+Geekbench 6 Single: 1420

@@ -1,0 +1,12 @@
+{
+  "case_id": "FX-003",
+  "title": "正文与图片配置冲突",
+  "covers": [
+    "正文图片冲突"
+  ],
+  "synthetic": true,
+  "synthetic_disclaimer": "SYNTHETIC FIXTURE — 人工构造，非真实 NodeSeek 帖子内容；仅供离线解析/契约验收。",
+  "raw_excerpt_file": "raw.excerpt.txt",
+  "expected_file": "expected.normalized.json",
+  "asserts_file": "acceptance.asserts.json"
+}

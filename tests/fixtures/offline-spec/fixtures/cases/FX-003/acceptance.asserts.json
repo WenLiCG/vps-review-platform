@@ -1,0 +1,22 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "conflict_keep_both",
+    "path": "$.observations.0.conflicts.0.resolution",
+    "equals": "keep_both"
+  },
+  {
+    "name": "memory_null",
+    "path": "$.plans.0.fields.memory_mb",
+    "equals": null
+  }
+]

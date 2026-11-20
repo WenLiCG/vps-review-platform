@@ -1,0 +1,139 @@
+{
+  "name": "vps-review-offline-spec",
+  "schema_version": "1.0.0-offline",
+  "generated_at_beijing": "2026-11-06T23:30:00+08:00",
+  "synthetic": true,
+  "disclaimer": "SYNTHETIC FIXTURE — 人工构造，非真实 NodeSeek 帖子内容；仅供离线解析/契约验收。",
+  "authorization_note": {
+    "user_provided_crawl_auth": true,
+    "document_title": "DATA COLLECTION AND WEBSITE CRAWLING AUTHORIZATION",
+    "partner": "Cary",
+    "dated": "2026-09-30",
+    "scope_summary": "用户提供授权：伙伴 Cary 可对 NodeSeek 进行 access/crawl/scrape/collect/process/analyze；允许 automated tools/crawlers/scripts/APIs；有效至书面撤销。本包不独立核实签名真实性。",
+    "still_open": [
+      "公开原文/第三方作者图片转载与商业再许可边界未在该授权中明确",
+      "本 ZIP 仅交付 synthetic fixtures 与契约；低频公开首帖采集属后续准备，本轮不执行全站采集",
+      "参考仓库 WenLiCG/vps-review-platform 仍不可访问"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "FX-001",
+      "title": "单套餐纯文字",
+      "covers": [
+        "单套餐纯文字"
+      ],
+      "dir": "fixtures/cases/FX-001"
+    },
+    {
+      "case_id": "FX-002",
+      "title": "一帖多套餐",
+      "covers": [
+        "多套餐"
+      ],
+      "dir": "fixtures/cases/FX-002"
+    },
+    {
+      "case_id": "FX-003",
+      "title": "正文与图片配置冲突",
+      "covers": [
+        "正文图片冲突"
+      ],
+      "dir": "fixtures/cases/FX-003"
+    },
+    {
+      "case_id": "FX-004",
+      "title": "缺失测试时间",
+      "covers": [
+        "缺失测试时间"
+      ],
+      "dir": "fixtures/cases/FX-004"
+    },
+    {
+      "case_id": "FX-005",
+      "title": "明确 UTC 换算北京时间跨日",
+      "covers": [
+        "明确UTC换算北京时间跨日"
+      ],
+      "dir": "fixtures/cases/FX-005"
+    },
+    {
+      "case_id": "FX-006",
+      "title": "价格周期与币种分离",
+      "covers": [
+        "价格周期币种分离"
+      ],
+      "dir": "fixtures/cases/FX-006"
+    },
+    {
+      "case_id": "FX-007",
+      "title": "GiB 与 GB 区分",
+      "covers": [
+        "GiB/GB区分"
+      ],
+      "dir": "fixtures/cases/FX-007"
+    },
+    {
+      "case_id": "FX-008A",
+      "title": "文件名冲突 A",
+      "covers": [
+        "文件名冲突及缺值"
+      ],
+      "dir": "fixtures/cases/FX-008A"
+    },
+    {
+      "case_id": "FX-008B",
+      "title": "文件名冲突 B",
+      "covers": [
+        "文件名冲突及缺值"
+      ],
+      "dir": "fixtures/cases/FX-008B"
+    },
+    {
+      "case_id": "FX-009",
+      "title": "Geekbench 5/6 分桶",
+      "covers": [
+        "GB5/6分桶"
+      ],
+      "dir": "fixtures/cases/FX-009"
+    },
+    {
+      "case_id": "FX-010",
+      "title": "线路仅见 AS4809 不得判 GIA",
+      "covers": [
+        "线路仅AS4809不能判GIA"
+      ],
+      "dir": "fixtures/cases/FX-010"
+    },
+    {
+      "case_id": "FX-011",
+      "title": "无足够样本不生成稳定标签",
+      "covers": [
+        "无统计样本不生成稳定标签"
+      ],
+      "dir": "fixtures/cases/FX-011"
+    },
+    {
+      "case_id": "FX-012",
+      "title": "同 run 多行不独立计入样本",
+      "covers": [
+        "多次同run不独立计数"
+      ],
+      "dir": "fixtures/cases/FX-012"
+    }
+  ],
+  "coverage_checklist": [
+    "GB5/6分桶",
+    "GiB/GB区分",
+    "价格周期币种分离",
+    "单套餐纯文字",
+    "多套餐",
+    "多次同run不独立计数",
+    "文件名冲突及缺值",
+    "无统计样本不生成稳定标签",
+    "明确UTC换算北京时间跨日",
+    "正文图片冲突",
+    "线路仅AS4809不能判GIA",
+    "缺失测试时间"
+  ]
+}

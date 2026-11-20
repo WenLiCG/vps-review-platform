@@ -1,0 +1,17 @@
+[
+  {
+    "name": "synthetic_true",
+    "path": "$.synthetic",
+    "equals": true
+  },
+  {
+    "name": "schema_version",
+    "path": "$.schema_version",
+    "equals": "1.0.0-offline"
+  },
+  {
+    "name": "suffix",
+    "path": "$.export.collision_suffix",
+    "equals": "synth-008b"
+  }
+]
